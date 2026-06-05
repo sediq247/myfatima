@@ -101,110 +101,110 @@ export const loveLetters: LoveLetter[] = [
   {
     id: 1,
     title: "The First Letter",
-    content: "My dearest Fatima,
+    content: `My dearest Fatima,
 
 I write this not because I have something new to say, but because my heart overflows with the same truth every day: I love you. You have transformed my ordinary world into something luminous. Every glance from you feels like a blessing, every word a melody. I am endlessly grateful that our paths crossed. You are my peace, my joy, and my forever.
 
-Yours always,",
+Yours always,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 2,
     title: "A Quiet Morning",
-    content: "Fatima,
+    content: `Fatima,
 
 This morning I woke up thinking of your smile. It is the first light that enters my world each day. I want you to know that you are cherished beyond measure â€” not for what you do, but simply for who you are. Your kindness, your strength, your grace â€” they leave me in awe. I am so lucky to love you.
 
-With all my heart,",
+With all my heart,`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 3,
     title: "Under the Stars",
-    content: "My love,
+    content: `My love,
 
 Tonight the sky is vast and full of stars, yet none shine brighter than the light you bring into my life. When I think of you, I feel a warmth that no distance can diminish. You are my constant in a changing world. Sleep peacefully tonight, knowing you are deeply and truly loved.
 
-Forever yours,",
+Forever yours,`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 4,
     title: "The Letter of Gratitude",
-    content: "Beloved Fatima,
+    content: `Beloved Fatima,
 
 Thank you for being the safe harbor my soul returns to. Thank you for your patience, your laughter, your gentle way of making everything better. I do not take your love for granted â€” I treasure it, protect it, and promise to honor it for as long as I live. You are my greatest gift.
 
-Gratefully,",
+Gratefully,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 5,
     title: "When Words Fail",
-    content: "Fatima,
+    content: `Fatima,
 
 Sometimes I search for the perfect words to describe my love for you, and I realize they do not exist in any language I know. My love for you is deeper than words, wider than oceans, and more certain than sunrise. It simply is â€” eternal, unshakable, and entirely yours.
 
-Always,",
+Always,`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 6,
     title: "A Promise",
-    content: "My darling,
+    content: `My darling,
 
 I promise to stand by you in silence when you need peace, and in noise when you need defense. I promise to choose you every single day, not because I have to, but because there is no one else I would rather choose. You are my person, my promise, and my purpose.
 
-Devotedly,",
+Devotedly,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 7,
     title: "The Little Things",
-    content: "Dearest,
+    content: `Dearest,
 
 It is not the grand gestures that make me love you most â€” it is the little things. The way you say my name. The way you worry about others before yourself. The way you make a room feel like home just by walking in. These small miracles are why my heart is forever yours.
 
-Tenderly,",
+Tenderly,`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 8,
     title: "From My Soul",
-    content: "Fatima,
+    content: `Fatima,
 
 If my soul could speak without my body, it would whisper only your name. You have touched a part of me I did not know existed. You are not just my love â€” you are my revelation. I am better because of you. I am whole because of you. I am yours, completely.
 
-Eternally,",
+Eternally,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 9,
     title: "Rainy Day Letter",
-    content: "My love,
+    content: `My love,
 
 Even on days when the sky is gray and the world feels heavy, you are my sunshine. Your love does not depend on perfect conditions â€” it is steady, warm, and unconditional. I hope this letter finds you wrapped in the same comfort you always give me. You are loved, today and always.
 
-Warmly,",
+Warmly,`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 10,
     title: "The Forever Letter",
-    content: "My beloved Fatima,
+    content: `My beloved Fatima,
 
 They say nothing lasts forever, but they have not seen us. My love for you defies time, distance, and every obstacle the world could place between us. You are my forever. You are my always. And if forever is not enough, then I will love you beyond it.
 
-Beyond forever,",
+Beyond forever,`,
     sealText: "F",
     isSpecial: true,
   },
@@ -217,7 +217,7 @@ export const birthdayLetters: LoveLetter[] = [
   {
     id: 201,
     title: "Happy Birthday My Love",
-    content: "My dearest Fatima,
+    content: `My dearest Fatima,
 
 Today is the most beautiful day of the year â€” the day you were born. On this day, the universe decided to create perfection and named it Fatima. Every year that passes, you become more radiant, more graceful, and more deeply loved.
 
@@ -225,14 +225,14 @@ I celebrate not just your birth, but every moment you have graced this world wit
 
 Happy Birthday, my everything.
 
-Forever yours,",
+Forever yours,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 202,
     title: "A Birthday Promise",
-    content: "My beloved Fatima,
+    content: `My beloved Fatima,
 
 On your birthday, I make you this promise: I will love you more tomorrow than I did yesterday. I will stand by you in every season, celebrate you in every victory, and hold you through every storm.
 
@@ -240,14 +240,14 @@ You deserve a lifetime of birthdays filled with laughter, surrounded by love, an
 
 Happy Birthday, my heart.
 
-Devotedly,",
+Devotedly,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 203,
     title: "The Day An Angel Was Born",
-    content: "My love,
+    content: `My love,
 
 Years ago today, an angel descended to earth and grew into the most incredible woman I have ever known. That angel is you, Fatima.
 
@@ -255,14 +255,14 @@ Your kindness heals, your smile illuminates, and your love transforms everything
 
 May your birthday be as extraordinary as you are.
 
-With all my love,",
+With all my love,`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 204,
     title: "Birthday Wishes From My Soul",
-    content: "My darling Fatima",
+    content: `My darling Fatima,
 
 If I could gather every star in the sky, I would string them together to spell 'Happy Birthday Fatima.' If I could capture every sunrise, I would paint them in the colors of your beauty.
 
@@ -270,9 +270,9 @@ But all I truly have is my heart â€” and it beats only for you. On your bir
 
 Happy Birthday, my eternal love.
 
-Yours beyond forever,"
-    sealText: "F"
-    isSpecial: true
+Yours beyond forever,`,
+    sealText: "F",
+    isSpecial: true,
   },
 ];
 
@@ -367,18 +367,18 @@ export const photoMemories: PhotoMemory[] = [
   { id: 4, source: require("../../assets/images/photo4.jpg"), caption: "Home is wherever you are", dateLabel: "Day 200" },
   { id: 5, source: require("../../assets/images/photo5.jpg"), caption: "When will my heart stop thinking about you?", dateLabel: "Day 365" },
   { id: 6, source: require("../../assets/images/photo6.jpg"), caption: "My heart, captured in a frame", dateLabel: "Day 500" },
-  { id: 7, source: require("../../assets/images/photo7.jpg"), caption: "Fatima,How I wish you're mine", dateLabel: "Day 60" },
-  { id: 8, source: require("../../assets/images/photo8.jpg"), caption: "My favorite Forever", dateLabel: "Day 90" },
-  { id: 9, source: require("../../assets/images/photo9.jpg"), caption: "My one and Only", dateLabel: "Day 150" },
+  { id: 7, source: require("../../assets/images/photo7.jpg"), caption: "Fatima, how I wish you're mine", dateLabel: "Day 60" },
+  { id: 8, source: require("../../assets/images/photo8.jpg"), caption: "My favorite forever", dateLabel: "Day 90" },
+  { id: 9, source: require("../../assets/images/photo9.jpg"), caption: "My one and only", dateLabel: "Day 150" },
   { id: 10, source: require("../../assets/images/photo10.jpg"), caption: "Every road leads back to you", dateLabel: "Day 250" },
   { id: 11, source: require("../../assets/images/photo11.jpg"), caption: "The moment time stood still", dateLabel: "Day 300" },
   { id: 12, source: require("../../assets/images/photo12.jpg"), caption: "Two hearts, one rhythm", dateLabel: "Day 400" },
   { id: 13, source: require("../../assets/images/photo13.jpg"), caption: "My favorite hello and hardest goodbye", dateLabel: "Day 450" },
   { id: 14, source: require("../../assets/images/photo14.jpg"), caption: "Written in the stars", dateLabel: "Day 550" },
   { id: 15, source: require("../../assets/images/photo15.jpg"), caption: "The best part of every day", dateLabel: "Day 600" },
-  { id: 16, source: require("../../assets/images/photo16.jpg"), caption: "Always Loves seeing your smile", dateLabel: "Day 700" },
+  { id: 16, source: require("../../assets/images/photo16.jpg"), caption: "Always love seeing your smile", dateLabel: "Day 700" },
   { id: 17, source: require("../../assets/images/photo17.jpg"), caption: "My forever person", dateLabel: "Day 800" },
-  { id: 18, source: require("../../assets/images/photo18.jpg"), caption: "I always wish you all the best in your whole life Fatima", dateLabel: "Day 900" },
-  { id: 19, source: require("../../assets/images/photo19.jpg"), caption: "Can't Stop loving you Fatima", dateLabel: "Day 1000" },
-  { id: 20, source: require("../../assets/images/photo20.jpg"), caption: "To infinity and beyond my hert will always be with you", dateLabel: "Day 1100" },
+  { id: 18, source: require("../../assets/images/photo18.jpg"), caption: "I always wish you all the best in your whole life, Fatima", dateLabel: "Day 900" },
+  { id: 19, source: require("../../assets/images/photo19.jpg"), caption: "Can't stop loving you, Fatima", dateLabel: "Day 1000" },
+  { id: 20, source: require("../../assets/images/photo20.jpg"), caption: "To infinity and beyond, my heart will always be with you", dateLabel: "Day 1100" },
 ];

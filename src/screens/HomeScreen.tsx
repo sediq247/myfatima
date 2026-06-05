@@ -32,7 +32,7 @@ import {
 import { Colors, Fonts, Spacing, Radius } from '../theme';
 
 const { width } = Dimensions.get('window');
-const RELATIONSHIP_START_DATE = new Date('2023-09-24');
+const RELATIONSHIP_START_DATE = new Date('2021-09-24');
 
 function PhotoFrame({ photo, index }: { photo: typeof photoMemories[0]; index: number }) {
   return (

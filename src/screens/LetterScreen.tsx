@@ -125,7 +125,7 @@ export default function LetterScreen() {
             <View style={styles.dividerLine} />
           </View>
 
-          <Text style={styles.signature}>{isBday ? 'Happy Birthday, my love' : 'Yours, always Abubakar'}</Text>
+          <Text style={styles.signature}>{isBday ? 'Happy Birthday, my love' : 'Yours always,Abubakar'}</Text>
         </ScrollView>
       </Animated.View>
     </View>

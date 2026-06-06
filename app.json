@@ -25,14 +25,13 @@
       },
       "package": "com.myfatima.app"
     },
-    "extra": {
-      "eas": {
-        "projectId": "6490f0d4-0f4f-437b-bf13-81fd2c65127f"
-      }
-    },
     "plugins": [
-      "expo-font",
-      "expo-audio"
+      [
+        "expo-av",
+        {
+          "microphonePermission": false
+        }
+      ]
     ]
   }
 }

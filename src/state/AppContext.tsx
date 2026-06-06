@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useReducer, useCallback, useRef } from 'react';
-import { Audio } from 'expo-av';
+import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
+import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from 'expo-audio';
 import { Song, LoveLetter } from '../data';
 
 // ============================================================
-// PRE-IMPORT ALL LOCAL AUDIO FILES (20 slots)
-// Add your MP3 files to assets/music/ and update this map:
+// PRE-IMPORT ALL LOCAL AUDIO FILES (20 songs)
 // ============================================================
 const songAssets: Record<string, any> = {
   'song1.mp3': require('../../assets/music/song1.mp3'),
@@ -39,7 +38,7 @@ export interface MusicState {
   progress: number;
   duration: number;
   playlistVisible: boolean;
-  sound: Audio.Sound | null;
+  // sound removed - using playerRef instead
 }
 
 export interface AppState {
@@ -58,7 +57,6 @@ type Action =
   | { type: 'PAUSE' }
   | { type: 'TOGGLE_PLAYLIST' }
   | { type: 'SET_PROGRESS'; progress: number; duration: number }
-  | { type: 'SET_SOUND'; sound: Audio.Sound | null }
   | { type: 'SELECT_LETTER'; letter: LoveLetter | null }
   | { type: 'SHOW_GREETING'; message: string; prayer: string; period: 'morning' | 'night'; isBirthday: boolean }
   | { type: 'HIDE_GREETING' }
@@ -72,7 +70,6 @@ const initialState: AppState = {
     progress: 0,
     duration: 0,
     playlistVisible: false,
-    sound: null,
   },
   selectedLetter: null,
   greetingVisible: false,
@@ -100,8 +97,6 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         music: { ...state.music, progress: action.progress, duration: action.duration },
       };
-    case 'SET_SOUND':
-      return { ...state, music: { ...state.music, sound: action.sound } };
     case 'SELECT_LETTER':
       return { ...state, selectedLetter: action.letter };
     case 'SHOW_GREETING':
@@ -138,7 +133,16 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const playerRef = useRef<AudioPlayer | null>(null);
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Recommended for music apps
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: true,
+    });
+  }, []);
 
   const clearProgressInterval = useCallback(() => {
     if (progressInterval.current) {
@@ -147,39 +151,40 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const startProgressPolling = useCallback((sound: Audio.Sound) => {
+  const startProgressPolling = useCallback((player: AudioPlayer) => {
     clearProgressInterval();
-    progressInterval.current = setInterval(async () => {
-      try {
-        const status = await sound.getStatusAsync();
-        if (status.isLoaded) {
-          dispatch({
-            type: 'SET_PROGRESS',
-            progress: status.positionMillis / 1000,
-            duration: status.durationMillis ? status.durationMillis / 1000 : 0,
-          });
-        }
-      } catch {
-        // ignore
+    progressInterval.current = setInterval(() => {
+      const status = player.status;
+      if (status.isLoaded) {
+        dispatch({
+          type: 'SET_PROGRESS',
+          progress: status.currentTime / 1000,
+          duration: status.duration ? status.duration / 1000 : 0,
+        });
       }
     }, 1000);
   }, [clearProgressInterval]);
 
   const playTrack = useCallback(async (index: number, songs: Song[]) => {
     try {
-      if (state.music.sound) {
-        await state.music.sound.unloadAsync();
+      if (playerRef.current) {
+        playerRef.current.pause();
       }
+
       const source = getSongSource(songs[index].filename);
-      const { sound } = await Audio.Sound.createAsync(
-        source,
-        { shouldPlay: true, isLooping: false }
-      );
-      dispatch({ type: 'SET_SOUND', sound });
+      const newPlayer = createAudioPlayer(source, {
+        shouldPlay: true,
+        isLooping: false
+      });
+
+      playerRef.current = newPlayer;
       dispatch({ type: 'SET_TRACK', index });
-      startProgressPolling(sound);
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.isLoaded && status.didJustFinish) {
+      dispatch({ type: 'PLAY' });
+
+      startProgressPolling(newPlayer);
+
+      newPlayer.addListener('playbackStatusUpdate', (status) => {
+        if (status.didJustFinish) {
           const nextIndex = (index + 1) % songs.length;
           playTrack(nextIndex, songs);
         }
@@ -187,24 +192,26 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.warn('Audio play failed', e);
     }
-  }, [state.music.sound, startProgressPolling]);
+  }, [startProgressPolling]);
 
   const togglePlayPause = useCallback(async () => {
-    if (!state.music.sound) return;
+    const player = playerRef.current;
+    if (!player) return;
+
     try {
       if (state.music.isPlaying) {
-        await state.music.sound.pauseAsync();
+        player.pause();
         dispatch({ type: 'PAUSE' });
         clearProgressInterval();
       } else {
-        await state.music.sound.playAsync();
+        player.play();
         dispatch({ type: 'PLAY' });
-        startProgressPolling(state.music.sound);
+        startProgressPolling(player);
       }
     } catch (e) {
       console.warn('Toggle play failed', e);
     }
-  }, [state.music.sound, state.music.isPlaying, clearProgressInterval, startProgressPolling]);
+  }, [state.music.isPlaying, clearProgressInterval, startProgressPolling]);
 
   const skipNext = useCallback(async (songs: Song[]) => {
     const nextIndex = (state.music.currentTrackIndex + 1) % songs.length;
@@ -218,16 +225,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const cleanupMusic = useCallback(async () => {
     clearProgressInterval();
-    if (state.music.sound) {
-      try {
-        await state.music.sound.stopAsync();
-        await state.music.sound.unloadAsync();
-      } catch {
-        // ignore
-      }
-      dispatch({ type: 'SET_SOUND', sound: null });
+    if (playerRef.current) {
+      playerRef.current.pause();
+      playerRef.current = null;
     }
-  }, [state.music.sound, clearProgressInterval]);
+  }, [clearProgressInterval]);
 
   return (
     <AppContext.Provider

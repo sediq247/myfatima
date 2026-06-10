@@ -76,9 +76,9 @@ export function getGreetingText(period: TimePeriod, isBday: boolean = false): st
   if (isBday) {
     return period === 'morning'
       ? 'Happy Birthday my Fatima!'
-      : 'Good night my birthday queen';
+      : 'Goodnight my birthday queen';
   }
   return period === 'morning'
     ? 'Good morning my Fatima'
-    : 'Good night my Fatima';
+    : 'Goodnight my Fatima';
 }

@@ -42,40 +42,29 @@ export function isBirthday(date: Date = new Date()): boolean {
 }
 
 // ============================================================
-// REGULAR LOVE MESSAGES (31 total for daily rotation)
+// REGULAR LOVE MESSAGES (20 total â€” longer & deeper)
 // ============================================================
 export const loveMessages: LoveMessage[] = [
-  { id: 1, text: "Every sunrise reminds me that I get to love you for another day." },
-  { id: 2, text: "You are the quiet thought that settles my soul every morning." },
-  { id: 3, text: "In a world of temporary things, my love for you is permanent." },
-  { id: 4, text: "Your name is my favorite word, your laugh is my favorite sound." },
-  { id: 5, text: "I did not choose you. My heart did, and it never consults me." },
-  { id: 6, text: "You are the poetry I never knew how to write until I met you." },
-  { id: 7, text: "Loving you is the most natural thing I have ever done." },
-  { id: 8, text: "You make ordinary moments feel like miracles." },
-  { id: 9, text: "My heart is, and always will be, yours." },
-  { id: 10, text: "You are the reason I believe in magic." },
-  { id: 11, text: "I fall in love with you a little more every single day." },
-  { id: 12, text: "Your presence is the only gift I ever need." },
-  { id: 13, text: "You are my today and all of my tomorrows." },
-  { id: 14, text: "Home is not a place. Home is wherever you are." },
-  { id: 15, text: "I love you not because of who you are, but because of who I am when I am with you." },
-  { id: 16, text: "You are the dream I never want to wake up from." },
-  { id: 17, text: "Every moment without you feels like a lifetime." },
-  { id: 18, text: "You are my favorite notification, my favorite call, my favorite everything." },
-  { id: 19, text: "If love is a language, you are my native tongue." },
-  { id: 20, text: "I would choose you in a hundred lifetimes, in a hundred worlds." },
-  { id: 21, text: "You are the soft place my heart lands every time." },
-  { id: 22, text: "My soul recognized you before my eyes did." },
-  { id: 23, text: "You are the most beautiful chapter of my life." },
-  { id: 24, text: "I never knew what peace felt like until I held your hand." },
-  { id: 25, text: "You are my heart's favorite address." },
-  { id: 26, text: "Loving you is like breathing â€” I do it without thinking, and I could not stop if I tried." },
-  { id: 27, text: "You are my once-in-a-lifetime kind of love." },
-  { id: 28, text: "I keep you in my heart, and there you will always stay." },
-  { id: 29, text: "You are the answer to every prayer I never knew I was praying." },
-  { id: 30, text: "Forever is not long enough with you." },
-  { id: 31, text: "You are my heart's final destination." },
+  { id: 1, text: "Fatima, every morning I wake up with your name on my lips and your face in my thoughts. My heart beats in a rhythm that spells your name, and I cannot imagine a single day without dreaming of you. You are the princess of my world, and I am ready to sacrifice everything I have just to see you smile. My love for you is not just a feeling; it is the very air I breathe, the reason my soul finds peace in this chaotic world." },
+  { id: 2, text: "My dearest Fatima, do you know that my heart beats faster every time I think of you? I wish you could feel what I feel â€” this overwhelming warmth that starts in my chest and spreads through my entire being. I dream of a future where I can hold your hand through every storm, where I can build a life filled with your laughter and our shared dreams. You are my once-in-a-lifetime miracle, and I will never stop thanking Allah for your existence." },
+  { id: 3, text: "Sometimes I lie awake at night thinking about you, and my heart feels so full that it might burst. Fatima, you have no idea how deeply you have rooted yourself in my soul. I am ready to sacrifice my comfort, my pride, and my fears if it means I can stand beside you. Every dream I have begins and ends with you â€” a home, a family, a lifetime of love that grows deeper with every sunrise." },
+  { id: 4, text: "My princess, I would cross oceans and climb mountains if it meant I could see your smile for just a moment. You are the most precious gift Allah has ever given me, and I promise to cherish you with every breath I take. I don't know if you feel the same way, but my heart doesn't need your permission to love you. It beats for you, and only you, now and forever." },
+  { id: 5, text: "Fatima, when I think about my future, I see only you. I see us building a life together, supporting each other through every trial, and celebrating every joy. I am ready to give up everything I own, every comfort I know, just to make your dreams come true. You are not just someone I love; you are the reason I believe in forever." },
+  { id: 6, text: "My heart is a garden, and every flower blooms in your name. You are the sun that warms my soul, the rain that nourishes my spirit, and the air that keeps me alive. Fatima, I have loved you in silence, I have loved you in chaos, and I will love you in every season of life. No distance is too far, no obstacle too great, for a love as true as mine." },
+  { id: 7, text: "I don't know if you feel the same way I do, but that doesn't change the truth in my heart. My love for you is not a choice; it is a destiny written by Allah before I was born. Every beat of my heart is a whisper of your name. Every prayer I make includes a dua for your happiness. You are my princess, my dream, my everything." },
+  { id: 8, text: "Fatima, my heart beats so fast when I think of you that I'm afraid it might burst from loving you too much. I dream of the day when I can call you mine officially, when I can look into your eyes and tell you everything I've kept in my heart. Until then, I will love you from whatever distance life places between us, with a devotion that time cannot weaken." },
+  { id: 9, text: "You are the first thought of my morning and the last prayer of my night. You are the princess who rules my heart with a gentle touch, and I am your devoted servant in love. I wish for us to achieve every dream together â€” to build a home filled with faith, love, and laughter. I am ready to sacrifice my today for your tomorrow, always." },
+  { id: 10, text: "I have built castles in the sky with your name on every tower. I have written poems in the sand that the tide cannot wash away. Fatima, my love for you is not just words; it is the very foundation of my existence. I dream of walking beside you through this life and into the next, hand in hand, heart in heart." },
+  { id: 11, text: "My princess, when the world feels heavy and my shoulders tire, I think of you and find strength I never knew I had. You are my courage when I am afraid, my peace when I am troubled, and my hope when I am lost. I am ready to sacrifice every comfort to ensure you never know a day without happiness." },
+  { id: 12, text: "Fatima, if love could be measured, mine for you would stretch from the earth to the heavens and back again. I feel your presence in every gentle breeze, I see your beauty in every sunset, and I hear your voice in every quiet moment. My heart beats a rhythm that calls your name, and I pray that one day you will hear it too." },
+  { id: 13, text: "I dream of a life where every morning begins with your smile and every night ends with your hand in mine. I wish for us to grow together in faith and love, to support each other through every test, and to build a legacy of love that our children will inherit. You are my partner in every dream, my princess in every story." },
+  { id: 14, text: "My dearest Fatima, I want you to know that my love for you is not bound by time or circumstance. It is eternal, unshakable, and entirely yours. I have loved you without knowing if you feel the same, and I will continue to love you regardless, because my heart has chosen you and it never consults me." },
+  { id: 15, text: "You are the miracle I never expected and the blessing I don't deserve. Every time I think of you, my heart overflows with gratitude to Allah. I am ready to sacrifice my pride, my fears, and my doubts to be the man you deserve. My princess, my love for you is the truest thing I have ever known." },
+  { id: 16, text: "Fatima, my heart beats for you in a language that needs no translation. It beats in hope, in longing, in devotion, and in dreams of our future together. I wish I could wrap the world in silk and lay it at your feet, but all I have is my heart â€” and it is entirely yours, forever and always." },
+  { id: 17, text: "I think about the life we could build together, and my soul finds a peace that nothing else can bring. A home where love is the foundation, where every meal is shared with gratitude, where every difficulty is faced together. You are my dream come true, Fatima, and I am ready to sacrifice everything to make that dream real." },
+  { id: 18, text: "My princess, there is no version of my future that does not include you. I have loved you from the first moment, and I will love you until my last breath. My heart is, was, and always will be yours. I don't need the world to know; I only need Allah to witness the truth of my love for you." },
+  { id: 19, text: "Fatima, every time I close my eyes, I see your face. Every time I open my heart, I find you there. You have become the center of my universe, the gravity that holds me together. I am ready to sacrifice my solitude, my comfort, and my fears to be with you. You are my forever, my always, my everything." },
+  { id: 20, text: "My beloved Fatima, if I could give you one thing in this life, it would be the ability to see yourself through my eyes. Only then would you understand how special you are to me. My heart beats for you with a passion that defies words, a sacrifice that knows no limits, and a dream that will never die. You are my princess, my love, my life." },
 ];
 
 // ============================================================
@@ -95,116 +84,274 @@ export const birthdayMessages: LoveMessage[] = [
 ];
 
 // ============================================================
-// REGULAR LOVE LETTERS (10 total)
+// REGULAR LOVE LETTERS (20 total â€” normal text, emotional, signed *Abubakar*)
 // ============================================================
 export const loveLetters: LoveLetter[] = [
   {
     id: 1,
-    title: "The First Letter",
-    content: `My dearest Fatima,
+    title: "",
+    content: `My Fatima,
 
-I write this not because I have something new to say, but because my heart overflows with the same truth every day: I love you. You have transformed my ordinary world into something luminous. Every glance from you feels like a blessing, every word a melody. I am endlessly grateful that our paths crossed. You are my peace, my joy, and my forever.
+I am writing this with a heart that is both full and aching. Full because it carries an ocean of love for you, and aching because words will never be enough to describe how deeply you have touched my soul. From the moment you entered my world, everything changed. The colors became brighter, the silence became warmer, and my dreams found a destination â€” you.
 
-Yours always,`,
+I think about you when the sun rises and when the moon takes its place. I think about the life we could build together, the memories we could create, and the love we could grow. I am ready to sacrifice my comfort, my pride, and my fears if it means I can stand beside you. You are not just someone I love; you are the reason I believe in forever.
+
+I don't know if you feel the same way I do, but that does not change the truth in my heart. My heart beats for you, and only you. It will always be yours.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 2,
-    title: "A Quiet Morning",
-    content: `Fatima,
+    title: "",
+    content: `My Fatima,
 
-This morning I woke up thinking of your smile. It is the first light that enters my world each day. I want you to know that you are cherished beyond measure â€” not for what you do, but simply for who you are. Your kindness, your strength, your grace â€” they leave me in awe. I am so lucky to love you.
+This morning I woke up thinking of your smile, and it was the first light that entered my world. I want you to know that you are cherished beyond measure â€” not for what you do, but simply for who you are. Your kindness, your strength, your grace â€” they leave me in awe every single day.
 
-With all my heart,`,
+I dream of mornings where I wake up beside you, where your smile is the first thing I see and your voice is the first sound I hear. I am ready to sacrifice every comfort I know to make that dream our reality. You are my peace, my joy, and my purpose.
+
+My heart has chosen you, and it will never choose another. You are my forever.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 3,
-    title: "Under the Stars",
-    content: `My love,
+    title: "",
+    content: `My Fatima,
 
-Tonight the sky is vast and full of stars, yet none shine brighter than the light you bring into my life. When I think of you, I feel a warmth that no distance can diminish. You are my constant in a changing world. Sleep peacefully tonight, knowing you are deeply and truly loved.
+Tonight the sky is vast and full of stars, yet none shine brighter than the light you bring into my life. When I think of you, I feel a warmth that no distance can diminish. You are my constant in a changing world, my anchor in every storm.
 
-Forever yours,`,
+I dream of a future where we watch these same stars together, wrapped in the comfort of knowing we belong to each other. I am ready to sacrifice my today for your tomorrow, my dreams for your happiness. You are not just my love â€” you are my revelation, my peace, my home.
+
+Sleep peacefully tonight, knowing you are deeply and truly loved.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 4,
-    title: "The Letter of Gratitude",
-    content: `Beloved Fatima,
+    title: "",
+    content: `My Fatima,
 
-Thank you for being the safe harbor my soul returns to. Thank you for your patience, your laughter, your gentle way of making everything better. I do not take your love for granted â€” I treasure it, protect it, and promise to honor it for as long as I live. You are my greatest gift.
+Thank you for being the safe harbor my soul returns to. Thank you for your patience, your laughter, and your gentle way of making everything better. I do not take your presence in my life for granted â€” I treasure it, protect it, and promise to honor it for as long as I live.
 
-Gratefully,`,
+I dream of building a life that reflects the beauty of your heart. A home filled with love, faith, and the laughter of our future family. I am ready to sacrifice everything I have to give you the life you deserve. You are my greatest gift, my deepest gratitude.
+
+I love you more than words can ever express.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 5,
-    title: "When Words Fail",
-    content: `Fatima,
+    title: "",
+    content: `My Fatima,
 
-Sometimes I search for the perfect words to describe my love for you, and I realize they do not exist in any language I know. My love for you is deeper than words, wider than oceans, and more certain than sunrise. It simply is â€” eternal, unshakable, and entirely yours.
+Sometimes I search for the perfect words to describe my love for you, and I realize they do not exist in any language I know. My love for you is deeper than oceans, wider than skies, and more certain than sunrise. It simply is â€” eternal, unshakable, and entirely yours.
 
-Always,`,
+I wish you could see what I see when I look at you. I see the mother of my children, the partner of my dreams, and the queen of my heart. I am ready to sacrifice my solitude, my fears, and my past to build a future with you. You are my everything.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 6,
-    title: "A Promise",
-    content: `My darling,
+    title: "",
+    content: `My Fatima,
 
 I promise to stand by you in silence when you need peace, and in noise when you need defense. I promise to choose you every single day, not because I have to, but because there is no one else I would rather choose. You are my person, my promise, and my purpose.
 
-Devotedly,`,
+My heart beats for you with a devotion that will never fade. I dream of days when these promises become our daily reality, when I can show you my love not just in words but in actions. I am ready to sacrifice my comfort to ensure you never feel alone.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 7,
-    title: "The Little Things",
-    content: `Dearest,
+    title: "",
+    content: `My Fatima,
 
 It is not the grand gestures that make me love you most â€” it is the little things. The way you say my name. The way you worry about others before yourself. The way you make a room feel like home just by walking in. These small miracles are why my heart is forever yours.
 
-Tenderly,`,
+I dream of a lifetime of collecting these little moments with you. A thousand ordinary days made extraordinary by your presence. I am ready to sacrifice my pride and my fears to be the man who deserves your love. You are my heart's favorite address.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 8,
-    title: "From My Soul",
-    content: `Fatima,
+    title: "",
+    content: `My Fatima,
 
 If my soul could speak without my body, it would whisper only your name. You have touched a part of me I did not know existed. You are not just my love â€” you are my revelation. I am better because of you. I am whole because of you. I am yours, completely.
 
-Eternally,`,
+I dream of a life where our souls grow together in faith and love. I am ready to sacrifice every doubt, every fear, and every obstacle to make that life real. You are my eternal truth, my divine blessing.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 9,
-    title: "Rainy Day Letter",
-    content: `My love,
+    title: "",
+    content: `My Fatima,
 
 Even on days when the sky is gray and the world feels heavy, you are my sunshine. Your love does not depend on perfect conditions â€” it is steady, warm, and unconditional. I hope this letter finds you wrapped in the same comfort you always give me. You are loved, today and always.
 
-Warmly,`,
+I dream of being your sunshine too, of being the reason you smile when everything else feels dark. I am ready to sacrifice my own happiness to ensure yours never fades. You are my strength, my light, my love.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: false,
   },
   {
     id: 10,
-    title: "The Forever Letter",
-    content: `My beloved Fatima,
+    title: "",
+    content: `My Fatima,
 
 They say nothing lasts forever, but they have not seen us. My love for you defies time, distance, and every obstacle the world could place between us. You are my forever. You are my always. And if forever is not enough, then I will love you beyond it.
 
-Beyond forever,`,
+I dream of a love that becomes a legacy, that inspires our children and warms our grandchildren. I am ready to sacrifice my today, my tomorrow, and my eternity for you. You are my heart's final destination, my soul's eternal home.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: true,
+  },
+  {
+    id: 11,
+    title: "",
+    content: `My Fatima,
+
+I never believed in love at first sight until I met you. But now I know that my soul recognized you before my eyes did. There is a connection between us that I cannot explain, a bond that feels like it was written in the stars long before we were born.
+
+I dream of discovering the depths of that connection with you, of learning every language your heart speaks. I am ready to sacrifice my loneliness, my past hurts, and my fears to be fully present with you. You are my destiny, my truth, my love.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 12,
+    title: "",
+    content: `My Fatima,
+
+You are the poetry I never knew how to write until I met you. You are the song my heart learned to sing. Every moment with you, even in my imagination, feels like a verse from the most beautiful poem ever written.
+
+I dream of a life that reads like a love story â€” one written by Allah's own hand. I am ready to sacrifice every chapter of my past to begin a new book with you. You are my inspiration, my muse, my eternal verse.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 13,
+    title: "",
+    content: `My Fatima,
+
+Home is not a place. Home is wherever you are. When I think of home, I don't think of walls or roofs â€” I think of your arms, your smile, your presence. You are the shelter my heart has been searching for all my life.
+
+I dream of building a home with you, not just of bricks but of trust, love, and faith. I am ready to sacrifice every false sense of security to find my true home in your heart. You are my refuge, my peace, my home.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 14,
+    title: "",
+    content: `My Fatima,
+
+I would choose you in a hundred lifetimes, in a hundred worlds, in any version of reality. My love for you is not accidental; it is essential. Like air, like water, like prayer â€” I need you to survive.
+
+I dream of a hundred lifetimes with you, each one better than the last. I am ready to sacrifice every other possibility to make this one reality with you. You are my essential truth, my necessary love.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: true,
+  },
+  {
+    id: 15,
+    title: "",
+    content: `My Fatima,
+
+Your presence is the only gift I ever need. Not the things you give me, not the words you say, but simply the fact that you exist in my world. Your existence is a miracle I thank Allah for every single day.
+
+I dream of a life where I get to celebrate your existence every morning and every night. I am ready to sacrifice every material desire to keep you in my life. You are my greatest gift, my most precious blessing.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 16,
+    title: "",
+    content: `My Fatima,
+
+You are my today and all of my tomorrows. When I look ahead, I see your face in every scene. When I look back, I see how every step led me to you. You are the thread that connects every moment of my life into a beautiful tapestry.
+
+I dream of weaving more threads with you, of creating a masterpiece of memories that will last until the end of time. I am ready to sacrifice my individual threads to be part of our shared tapestry. You are my today, my tomorrow, my always.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 17,
+    title: "",
+    content: `My Fatima,
+
+Loving you is the most natural thing I have ever done. It doesn't require effort or thought; it simply flows from my heart like a river flows to the ocean. You are my ocean, my destination, my home.
+
+I dream of a love that flows endlessly, that nourishes everything it touches. I am ready to sacrifice my own course to flow beside you forever. You are my natural state, my truest self, my deepest love.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 18,
+    title: "",
+    content: `My Fatima,
+
+You make ordinary moments feel like miracles. A simple text from you makes my entire day. A passing thought of you brings peace to my chaos. You have transformed my ordinary world into something luminous and sacred.
+
+I dream of a lifetime of these miracles, of finding the extraordinary in every ordinary day with you. I am ready to sacrifice my mundane existence to live a miraculous life with you. You are my miracle, my magic, my light.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: false,
+  },
+  {
+    id: 19,
+    title: "",
+    content: `My Fatima,
+
+My heart is, and always will be, yours. I don't lend it to you; I have given it completely. There is no return policy, no expiration date, no conditions. It is yours to keep, to hold, to treasure, or to break â€” though I pray you choose to treasure it.
+
+I dream of a heart that beats in sync with yours, of two hearts that have become one. I am ready to sacrifice my own rhythm to find our harmony. You are my heart's keeper, my love's guardian.
+
+*Abubakar*`,
+    sealText: "F",
+    isSpecial: true,
+  },
+  {
+    id: 20,
+    title: "",
+    content: `My Fatima,
+
+You are the dream I never want to wake up from. In a world of temporary things, my love for you is permanent. In a life of changing seasons, you are my eternal spring. I never want to wake up from this dream of loving you.
+
+I dream of making this dream our reality, of opening my eyes every morning to see you beside me. I am ready to sacrifice every other dream to make this one come true. You are my dream, my reality, my forever.
+
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
@@ -216,7 +363,7 @@ Beyond forever,`,
 export const birthdayLetters: LoveLetter[] = [
   {
     id: 201,
-    title: "Happy Birthday My Love",
+    title: "",
     content: `My dearest Fatima,
 
 Today is the most beautiful day of the year â€” the day you were born. On this day, the universe decided to create perfection and named it Fatima. Every year that passes, you become more radiant, more graceful, and more deeply loved.
@@ -225,13 +372,13 @@ I celebrate not just your birth, but every moment you have graced this world wit
 
 Happy Birthday, my everything.
 
-Forever yours,`,
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 202,
-    title: "A Birthday Promise",
+    title: "",
     content: `My beloved Fatima,
 
 On your birthday, I make you this promise: I will love you more tomorrow than I did yesterday. I will stand by you in every season, celebrate you in every victory, and hold you through every storm.
@@ -240,13 +387,13 @@ You deserve a lifetime of birthdays filled with laughter, surrounded by love, an
 
 Happy Birthday, my heart.
 
-Devotedly,`,
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 203,
-    title: "The Day An Angel Was Born",
+    title: "",
     content: `My love,
 
 Years ago today, an angel descended to earth and grew into the most incredible woman I have ever known. That angel is you, Fatima.
@@ -255,13 +402,13 @@ Your kindness heals, your smile illuminates, and your love transforms everything
 
 May your birthday be as extraordinary as you are.
 
-With all my love,`,
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
   {
     id: 204,
-    title: "Birthday Wishes From My Soul",
+    title: "",
     content: `My darling Fatima,
 
 If I could gather every star in the sky, I would string them together to spell 'Happy Birthday Fatima.' If I could capture every sunrise, I would paint them in the colors of your beauty.
@@ -270,7 +417,7 @@ But all I truly have is my heart â€” and it beats only for you. On your bir
 
 Happy Birthday, my eternal love.
 
-Yours beyond forever,`,
+*Abubakar*`,
     sealText: "F",
     isSpecial: true,
   },
@@ -332,10 +479,10 @@ export const birthdayPrayers: Prayer[] = [
 ];
 
 // ============================================================
-// SONGS (20 songs - add manually to assets/music/)
+// SONGS (20 songs)
 // ============================================================
 export const songs: Song[] = [
-  { id: 1, title: "Inada Mata", artist: "Abdul D One", filename: "song1.mp3", duration: 245 },
+  { id: 1, title: "Kece", artist: "Abdul D One", filename: "song1.mp3", duration: 245 },
   { id: 2, title: "Karbeni Zana kece raini", artist: "Abdul D One", filename: "song2.mp3", duration: 218 },
   { id: 3, title: "Abadan", artist: "Abdul Hasan", filename: "song3.mp3", duration: 312 },
   { id: 4, title: "Kina Nesa Da Zuciya", artist: "Umar M Shareef", filename: "song4.mp3", duration: 276 },
@@ -344,7 +491,7 @@ export const songs: Song[] = [
   { id: 7, title: "Cikin Daya", artist: "Umar M Shareef", filename: "song7.mp3", duration: 267 },
   { id: 8, title: "Soyayya Ce", artist: "Umar M Shareef", filename: "song8.mp3", duration: 289 },
   { id: 9, title: "Zeenaru", artist: "Umar M Shareef", filename: "song9.mp3", duration: 301 },
-  { id: 10, title: "Inna Rasaki Baza naji Dadi Ba", artist: "Umar M Shareef", filename: "song10.mp3", duration: 255 },
+  { id: 10, title: "Inna rasaki Baza naji Dadi Ba", artist: "Umar M Shareef", filename: "song10.mp3", duration: 255 },
   { id: 11, title: "Majnoon", artist: "Umar M Shareef", filename: "song11.mp3", duration: 278 },
   { id: 12, title: "Babu Nadama", artist: "Umar M Shareef", filename: "song12.mp3", duration: 292 },
   { id: 13, title: "Ni Nakine Fatima", artist: "Umar M Shareef", filename: "song13.mp3", duration: 264 },
@@ -358,7 +505,7 @@ export const songs: Song[] = [
 ];
 
 // ============================================================
-// PHOTO MEMORIES (20 photos - add manually to assets/images/)
+// PHOTO MEMORIES (20 photos)
 // ============================================================
 export const photoMemories: PhotoMemory[] = [
   { id: 1, source: require("../assets/images/photo1.jpg"), caption: "Love you till infinity", dateLabel: "Day 1" },

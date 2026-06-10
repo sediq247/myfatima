@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
-import { Colors, Fonts, Spacing, Radius } from '../theme';
+import { Fonts, Spacing, Radius } from '../theme';
 import { TimePeriod } from '../core/engine';
 
 const { width } = Dimensions.get('window');
@@ -41,13 +41,8 @@ export default function GreetingOverlay({ visible, message, prayer, period, isBi
           useNativeDriver: true,
         }),
       ]).start();
-
-      const timer = setTimeout(() => {
-        handleDismiss();
-      }, isBirthday ? 8000 : 5000);
-      return () => clearTimeout(timer);
     }
-  }, [visible, isBirthday]);
+  }, [visible]);
 
   const handleDismiss = () => {
     Animated.parallel([
@@ -81,24 +76,23 @@ export default function GreetingOverlay({ visible, message, prayer, period, isBi
           },
         ]}
       >
-        {/* Birthday confetti or period icon */}
         <View style={[styles.iconCircle, isBirthday && styles.birthdayIconCircle]}>
           {isBirthday ? (
-            <FontAwesome5 name="birthday-cake" size={36} color={Colors.accent.gold} />
+            <FontAwesome5 name="birthday-cake" size={36} color="#d4af37" />
           ) : (
             <Ionicons
               name={period === 'morning' ? 'sunny' : 'moon'}
               size={40}
-              color={Colors.accent.gold}
+              color="#d4af37"
             />
           )}
         </View>
 
         {isBirthday && (
           <View style={styles.birthdayStars}>
-            <FontAwesome5 name="star" size={12} color={Colors.accent.gold} />
+            <FontAwesome5 name="star" size={12} color="#d4af37" />
             <Text style={styles.birthdayLabel}>Happy Birthday</Text>
-            <FontAwesome5 name="star" size={12} color={Colors.accent.gold} />
+            <FontAwesome5 name="star" size={12} color="#d4af37" />
           </View>
         )}
 
@@ -106,7 +100,7 @@ export default function GreetingOverlay({ visible, message, prayer, period, isBi
 
         <View style={styles.divider}>
           <View style={styles.line} />
-          <Ionicons name="heart" size={14} color={isBirthday ? Colors.accent.gold : Colors.accent.roseLight} />
+          <Ionicons name="heart" size={14} color={isBirthday ? '#d4af37' : '#fb7185'} />
           <View style={styles.line} />
         </View>
 
@@ -131,27 +125,27 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15,5,24,0.92)',
+    backgroundColor: 'rgba(0,0,0,0.92)',
   },
   card: {
     width: width * 0.85,
-    backgroundColor: Colors.bg.nightEnd,
+    backgroundColor: '#141b2d',
     borderRadius: Radius.xl,
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.3)',
     padding: Spacing.xl,
     alignItems: 'center',
-    shadowColor: Colors.accent.gold,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
     elevation: 12,
   },
   birthdayCard: {
     borderColor: 'rgba(212,175,55,0.6)',
-    shadowColor: Colors.accent.gold,
+    shadowColor: '#d4af37',
     shadowOpacity: 0.4,
-    backgroundColor: 'rgba(26,11,46,0.98)',
+    backgroundColor: '#0a0e1a',
   },
   iconCircle: {
     width: 80,
@@ -177,20 +171,20 @@ const styles = StyleSheet.create({
   birthdayLabel: {
     fontFamily: Fonts.bodyMedium,
     fontSize: 11,
-    color: Colors.accent.gold,
+    color: '#d4af37',
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
   greeting: {
     fontFamily: Fonts.title,
     fontSize: 24,
-    color: Colors.accent.cream,
+    color: '#f0e6d2',
     textAlign: 'center',
     lineHeight: 32,
   },
   birthdayGreeting: {
     fontSize: 26,
-    color: Colors.accent.goldLight,
+    color: '#f0d878',
   },
   divider: {
     flexDirection: 'row',
@@ -206,13 +200,13 @@ const styles = StyleSheet.create({
   prayer: {
     fontFamily: Fonts.body,
     fontSize: 15,
-    color: Colors.text.secondary,
+    color: '#b8a99a',
     textAlign: 'center',
     lineHeight: 24,
     fontStyle: 'italic',
   },
   birthdayPrayer: {
-    color: Colors.accent.creamMuted,
+    color: '#b8a99a',
   },
   dismissBtn: {
     marginTop: Spacing.xl,
@@ -230,10 +224,10 @@ const styles = StyleSheet.create({
   dismissText: {
     fontFamily: Fonts.bodyMedium,
     fontSize: 12,
-    color: Colors.accent.gold,
+    color: '#d4af37',
     letterSpacing: 1,
   },
   birthdayDismissText: {
-    color: Colors.accent.goldLight,
+    color: '#f0d878',
   },
 });

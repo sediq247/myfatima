@@ -5,12 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#1a0b2e"
-    },
+    "userInterfaceStyle": "light",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -27,9 +22,19 @@
     },
     "plugins": [
       [
-        "expo-av",
+        "expo-audio",
         {
-          "microphonePermission": false
+          "microphonePermission": false,
+          "enableBackgroundPlayback": true,
+          "enableBackgroundRecording": false
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#1a0b2e",
+          "image": "./assets/splash.png",
+          "imageWidth": 200
         }
       ]
     ]

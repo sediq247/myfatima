@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
 import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from 'expo-audio';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Song, LoveLetter } from '../data';
 
 // ============================================================
@@ -38,7 +39,6 @@ export interface MusicState {
   progress: number;
   duration: number;
   playlistVisible: boolean;
-  // sound removed - using playerRef instead
 }
 
 export interface AppState {
@@ -49,6 +49,7 @@ export interface AppState {
   greetingPrayer: string;
   timePeriod: 'morning' | 'night';
   isBirthday: boolean;
+  theme: 'day' | 'night';
 }
 
 type Action =
@@ -61,7 +62,8 @@ type Action =
   | { type: 'SHOW_GREETING'; message: string; prayer: string; period: 'morning' | 'night'; isBirthday: boolean }
   | { type: 'HIDE_GREETING' }
   | { type: 'SET_TIME_PERIOD'; period: 'morning' | 'night' }
-  | { type: 'SET_BIRTHDAY'; isBirthday: boolean };
+  | { type: 'SET_BIRTHDAY'; isBirthday: boolean }
+  | { type: 'SET_THEME'; theme: 'day' | 'night' };
 
 const initialState: AppState = {
   music: {
@@ -77,6 +79,7 @@ const initialState: AppState = {
   greetingPrayer: '',
   timePeriod: 'morning',
   isBirthday: false,
+  theme: 'day',
 };
 
 function reducer(state: AppState, action: Action): AppState {
@@ -114,6 +117,8 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, timePeriod: action.period };
     case 'SET_BIRTHDAY':
       return { ...state, isBirthday: action.isBirthday };
+    case 'SET_THEME':
+      return { ...state, theme: action.theme };
     default:
       return state;
   }
@@ -122,6 +127,8 @@ function reducer(state: AppState, action: Action): AppState {
 interface AppContextType {
   state: AppState;
   dispatch: React.Dispatch<Action>;
+  loadTheme: () => Promise<void>;
+  toggleTheme: () => Promise<void>;
   playTrack: (index: number, songs: Song[]) => Promise<void>;
   togglePlayPause: () => Promise<void>;
   skipNext: (songs: Song[]) => Promise<void>;
@@ -135,13 +142,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const playerRef = useRef<AudioPlayer | null>(null);
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const listenerRef = useRef<any>(null);
 
-  // Recommended for music apps
+  // Setup audio mode with error handling
   useEffect(() => {
-    setAudioModeAsync({
-      playsInSilentMode: true,
-      shouldPlayInBackground: true,
-    });
+    let mounted = true;
+    const setupAudio = async () => {
+      try {
+        await setAudioModeAsync({
+          playsInSilentMode: true,
+          shouldPlayInBackground: true,
+        });
+      } catch (e) {
+        console.warn('Audio mode setup failed:', e);
+      }
+    };
+    if (mounted) setupAudio();
+    return () => { mounted = false; };
   }, []);
 
   const clearProgressInterval = useCallback(() => {
@@ -165,11 +182,33 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }, 1000);
   }, [clearProgressInterval]);
 
+  const cleanupPlayer = useCallback(() => {
+    clearProgressInterval();
+    if (listenerRef.current && playerRef.current) {
+      try {
+        playerRef.current.removeListener('playbackStatusUpdate', listenerRef.current);
+      } catch (e) {
+        // Ignore
+      }
+      listenerRef.current = null;
+    }
+    if (playerRef.current) {
+      try {
+        playerRef.current.pause();
+      } catch (e) {
+        // Ignore
+      }
+      playerRef.current = null;
+    }
+  }, [clearProgressInterval]);
+
   const playTrack = useCallback(async (index: number, songs: Song[]) => {
     try {
-      if (playerRef.current) {
-        playerRef.current.pause();
-      }
+      // Cleanup previous player completely
+      cleanupPlayer();
+
+      // Small delay to ensure native cleanup
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       const source = getSongSource(songs[index].filename);
       const newPlayer = createAudioPlayer(source, {
@@ -179,20 +218,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       playerRef.current = newPlayer;
       dispatch({ type: 'SET_TRACK', index });
-      dispatch({ type: 'PLAY' });
 
       startProgressPolling(newPlayer);
 
-      newPlayer.addListener('playbackStatusUpdate', (status) => {
+      // Store listener reference for cleanup
+      const listener = (status: any) => {
         if (status.didJustFinish) {
           const nextIndex = (index + 1) % songs.length;
           playTrack(nextIndex, songs);
         }
-      });
+      };
+     
+      newPlayer.addListener('playbackStatusUpdate', listener);
+      listenerRef.current = listener;
+
     } catch (e) {
       console.warn('Audio play failed', e);
+      dispatch({ type: 'PAUSE' });
     }
-  }, [startProgressPolling]);
+  }, [cleanupPlayer, startProgressPolling]);
 
   const togglePlayPause = useCallback(async () => {
     const player = playerRef.current;
@@ -224,16 +268,43 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [state.music.currentTrackIndex, playTrack]);
 
   const cleanupMusic = useCallback(async () => {
-    clearProgressInterval();
-    if (playerRef.current) {
-      playerRef.current.pause();
-      playerRef.current = null;
+    cleanupPlayer();
+  }, [cleanupPlayer]);
+
+  const loadTheme = useCallback(async () => {
+    try {
+      const saved = await AsyncStorage.getItem('myfatima_theme');
+      if (saved === 'day' || saved === 'night') {
+        dispatch({ type: 'SET_THEME', theme: saved });
+      }
+    } catch (e) {
+      console.warn('Failed to load theme:', e);
     }
-  }, [clearProgressInterval]);
+  }, []);
+
+  const toggleTheme = useCallback(async () => {
+    const newTheme = state.theme === 'day' ? 'night' : 'day';
+    dispatch({ type: 'SET_THEME', theme: newTheme });
+    try {
+      await AsyncStorage.setItem('myfatima_theme', newTheme);
+    } catch (e) {
+      console.warn('Failed to save theme:', e);
+    }
+  }, [state.theme]);
 
   return (
     <AppContext.Provider
-      value={{ state, dispatch, playTrack, togglePlayPause, skipNext, skipPrev, cleanupMusic }}
+      value={{
+        state,
+        dispatch,
+        loadTheme,
+        toggleTheme,
+        playTrack,
+        togglePlayPause,
+        skipNext,
+        skipPrev,
+        cleanupMusic
+      }}
     >
       {children}
     </AppContext.Provider>

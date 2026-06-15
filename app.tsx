@@ -41,10 +41,10 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 function AppContent() {
   const { state, dispatch, loadTheme } = useApp();
-  const [appReady, setAppReady] = useState(false);
+  const [assetsReady, setAssetsReady] = useState(false);
 
   // Load Google Fonts
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     PlayfairDisplay_700Bold,
     PlayfairDisplay_700Bold_Italic,
     Inter_400Regular,
@@ -68,12 +68,12 @@ function AppContent() {
         } else {
           prayers = period === 'morning' ? morningPrayers : nightPrayers;
         }
-       
+      
         if (prayers && prayers.length > 0) {
           const prayerIndex = getDailyIndex(prayers.length);
           const prayer = prayers[prayerIndex].text;
           const message = getGreetingText(period, bday);
-         
+        
           dispatch({ type: 'SHOW_GREETING', message, prayer, period, isBirthday: bday });
           await markGreetingShown(key);
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -89,6 +89,7 @@ function AppContent() {
 
   // Step 1: Preload images and themes in the background
   useEffect(() => {
+    let mounted = true;
     async function prepare() {
       try {
         if (photoMemories && photoMemories.length > 0) {
@@ -99,23 +100,21 @@ function AppContent() {
       } catch (e) {
         console.warn('Error preloading assets or theme:', e);
       } finally {
-        // Only declare app ready if fonts have finished loading as well
-        if (fontsLoaded) {
-          setAppReady(true);
+        if (mounted) {
+          setAssetsReady(true);
         }
       }
     }
     prepare();
-  }, [fontsLoaded, loadTheme]);
+    return () => { mounted = false; };
+  }, [loadTheme]);
 
-  // Step 2: Once app is ready and rendering, hide Splash Screen safely
+  // Step 2: Hide splash screen ONLY when BOTH fonts AND assets are ready
   useEffect(() => {
     async function hideSplashAndGreet() {
-      if (appReady) {
+      if (fontsLoaded && assetsReady) {
         try {
-          // Hide native splash screen safely
           await SplashScreen.hideAsync();
-          // Immediately pop up the greeting overlay if needed
           await triggerGreeting();
         } catch (e) {
           console.warn('Error hiding splash screen:', e);
@@ -123,7 +122,15 @@ function AppContent() {
       }
     }
     hideSplashAndGreet();
-  }, [appReady, triggerGreeting]);
+  }, [fontsLoaded, assetsReady, triggerGreeting]);
+
+  // Handle font loading errors gracefully
+  useEffect(() => {
+    if (fontError) {
+      console.warn('Font loading error:', fontError);
+      setAssetsReady(true); // Don't block app launch on font errors
+    }
+  }, [fontError]);
 
   // Step 3: Monitor time period background changes every minute
   useEffect(() => {
@@ -140,7 +147,7 @@ function AppContent() {
   }, [state.timePeriod, state.isBirthday, dispatch, triggerGreeting]);
 
   // Render nothing while initializing so the native splash screen stays locked in place
-  if (!appReady) {
+  if (!fontsLoaded || !assetsReady) {
     return null;
   }
 
@@ -150,11 +157,9 @@ function AppContent() {
   return (
     <View style={[styles.container, { backgroundColor: currentThemeData.bg.start }]}>
       <StatusBar style={state.theme === 'day' ? 'dark' : 'light'} />
-     
-      {/* App Core Navigation */}
+    
       <AppNavigator />
-     
-      {/* Dynamic Popups */}
+    
       <GreetingOverlay
         visible={state.greetingVisible}
         message={state.greetingMessage}
@@ -167,7 +172,6 @@ function AppContent() {
   );
 }
 
-// Global Context Wrapper Setup
 export default function App() {
   return (
     <AppProvider>

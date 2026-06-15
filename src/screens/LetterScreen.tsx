@@ -1,15 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Animated,
   Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  runOnJS,
+} from 'react-native-reanimated';
 import { useApp } from '../state/AppContext';
 import { Themes, Fonts, Spacing, Radius } from '../theme';
 
@@ -19,42 +24,35 @@ export default function LetterScreen() {
   const navigation = useNavigation();
   const { state } = useApp();
   const Colors = Themes[state.theme];
-  const slideAnim = useRef(new Animated.Value(height)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const letter = state.selectedLetter;
   const isBday = state.isBirthday;
 
+  // Reanimated shared values
+  const translateY = useSharedValue(height);
+  const opacity = useSharedValue(0);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+    opacity: opacity.value,
+  }));
+
+  const backdropStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
   useEffect(() => {
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 600,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [slideAnim, fadeAnim]);
+    // Entrance animation
+    translateY.value = withTiming(0, { duration: 600 });
+    opacity.value = withTiming(1, { duration: 400 });
+  }, []);
 
   const handleClose = () => {
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: height,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      navigation.goBack();
+    // Exit animation, then navigate back
+    translateY.value = withTiming(height, { duration: 400 }, () => {
+      runOnJS(() => navigation.goBack())();
     });
+    opacity.value = withTiming(0, { duration: 300 });
   };
 
   if (!letter) {
@@ -73,7 +71,7 @@ export default function LetterScreen() {
 
   return (
     <View style={styles.root}>
-      <Animated.View style={[styles.backdrop, { opacity: fadeAnim }]}>
+      <Animated.View style={[styles.backdrop, backdropStyle]}>
         <TouchableOpacity style={styles.backdropTouch} onPress={handleClose} activeOpacity={1} />
       </Animated.View>
 
@@ -82,9 +80,8 @@ export default function LetterScreen() {
           styles.sheet,
           {
             backgroundColor: state.theme === 'day' ? '#faf6f0' : '#1a1510',
-            transform: [{ translateY: slideAnim }],
-            opacity: fadeAnim,
           },
+          animatedStyle,
         ]}
       >
         <TouchableOpacity style={styles.closeBtn} onPress={handleClose}>

@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { useApp } from '../state/AppContext';
 import { songs } from '../data';
 import { Themes, Fonts, Spacing, Radius } from '../theme';
@@ -43,23 +43,23 @@ export default function MusicScreen() {
               style={[
                 styles.songRow,
                 {
-                  backgroundColor: isActive ? 'rgba(212,175,55,0.12)' : Colors.bg.card,
+                  backgroundColor: isActive ? 'rgba(212,175,55,0.10)' : Colors.bg.card,
                   borderColor: isActive ? Colors.accent.gold : Colors.bg.cardBorder,
                 },
               ]}
-              onPress={() => playTrack(idx, songs)}
+              onPress={() => playTrack(idx)}
               activeOpacity={0.7}
             >
               <View style={styles.songLeft}>
                 <View style={[
                   styles.songIcon,
                   {
-                    backgroundColor: isActive ? Colors.accent.gold : 'rgba(212,175,55,0.15)',
+                    backgroundColor: isActive ? Colors.accent.gold : 'rgba(212,175,55,0.12)',
                   },
                 ]}>
                   <FontAwesome5
                     name={isActive && state.music.isPlaying ? 'pause' : 'play'}
-                    size={12}
+                    size={11}
                     color={isActive ? Colors.bg.start : Colors.accent.gold}
                   />
                 </View>
@@ -102,23 +102,23 @@ export default function MusicScreen() {
           </View>
 
           <View style={styles.playerControls}>
-            <TouchableOpacity onPress={() => skipPrev(songs)} style={styles.controlBtn}>
-              <Ionicons name="play-skip-back" size={24} color={Colors.accent.gold} />
+            <TouchableOpacity onPress={skipPrev} style={styles.controlBtn}>
+              <Ionicons name="play-skip-back" size={22} color={Colors.accent.gold} />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => togglePlayPause()} style={[
+            <TouchableOpacity onPress={togglePlayPause} style={[
               styles.playBtn,
               { backgroundColor: Colors.accent.gold }
             ]}>
               <FontAwesome5
                 name={state.music.isPlaying ? 'pause' : 'play'}
-                size={20}
+                size={18}
                 color={Colors.bg.start}
               />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => skipNext(songs)} style={styles.controlBtn}>
-              <Ionicons name="play-skip-forward" size={24} color={Colors.accent.gold} />
+            <TouchableOpacity onPress={skipNext} style={styles.controlBtn}>
+              <Ionicons name="play-skip-forward" size={22} color={Colors.accent.gold} />
             </TouchableOpacity>
           </View>
 
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontFamily: Fonts.title,
-    fontSize: 28,
+    fontSize: 26,
     letterSpacing: 0.5,
   },
   headerSubtitle: {
@@ -180,9 +180,9 @@ const styles = StyleSheet.create({
     marginRight: Spacing.sm,
   },
   songIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.md,
@@ -192,11 +192,11 @@ const styles = StyleSheet.create({
   },
   songTitle: {
     fontFamily: Fonts.bodyMedium,
-    fontSize: 15,
+    fontSize: 14,
   },
   songArtist: {
     fontFamily: Fonts.body,
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 2,
   },
   songDuration: {
@@ -219,11 +219,11 @@ const styles = StyleSheet.create({
   },
   playerTitle: {
     fontFamily: Fonts.bodyMedium,
-    fontSize: 16,
+    fontSize: 15,
   },
   playerArtist: {
     fontFamily: Fonts.body,
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 2,
   },
   playerControls: {
@@ -237,9 +237,9 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
   },
   playBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
   },

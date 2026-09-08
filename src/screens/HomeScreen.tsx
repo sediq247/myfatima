@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,15 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useApp } from '../state/AppContext';
 import {
   getGreetingText,
   getDailyIndex,
+  getDaysTogether,
 } from '../core/engine';
 import {
   loveMessages,
@@ -23,12 +24,13 @@ import {
   birthdayLetters,
   photoMemories,
   morningPrayers,
+  afternoonPrayers,
   nightPrayers,
   birthdayPrayers,
   isBirthday,
-  LoveLetter,
 } from '../data';
 import { Themes, Fonts, Spacing, Radius } from '../theme';
+import { RELATIONSHIP_START_DATE } from '../config';
 
 const { width } = Dimensions.get('window');
 
@@ -40,7 +42,34 @@ export default function HomeScreen() {
   const period = state.timePeriod;
   const bday = state.isBirthday;
 
-  // Get daily content - all use same date for consistency
+  const [daysCount, setDaysCount] = useState(0);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    setDaysCount(getDaysTogether(RELATIONSHIP_START_DATE));
+    const interval = setInterval(() => {
+      setDaysCount(getDaysTogether(RELATIONSHIP_START_DATE));
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.12,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
   const today = new Date();
 
   const messages = bday ? birthdayMessages : loveMessages;
@@ -50,7 +79,13 @@ export default function HomeScreen() {
   const dailyPhotoIndex = getDailyIndex(photoMemories.length, today);
   const dailyPhoto = photoMemories[dailyPhotoIndex];
 
-  const prayers = bday ? birthdayPrayers : (period === 'morning' ? morningPrayers : nightPrayers);
+  const prayers = bday
+    ? birthdayPrayers
+    : period === 'morning'
+    ? morningPrayers
+    : period === 'afternoon'
+    ? afternoonPrayers
+    : nightPrayers;
   const dailyPrayerIndex = getDailyIndex(prayers.length, today);
   const dailyPrayer = prayers[dailyPrayerIndex].text;
 
@@ -65,140 +100,197 @@ export default function HomeScreen() {
     navigation.navigate('Letter');
   }, [dispatch, navigation, dailyLetter]);
 
-  const bgColors = [Colors.bg.start, Colors.bg.end] as const;
+  const getPeriodIcon = () => {
+    if (period === 'morning') return 'sunny';
+    if (period === 'afternoon') return 'partly-sunny';
+    return 'moon';
+  };
 
   return (
-    <View style={styles.root}>
-      <LinearGradient colors={bgColors} style={styles.gradient}>
-        {/* Persistent Greeting Header */}
-        <View style={[
-          styles.greetingHeader,
-          { backgroundColor: Colors.bg.card, borderColor: Colors.bg.cardBorder }
-        ]}>
-          <View style={styles.greetingTopRow}>
-            <View style={styles.greetingIconText}>
-              <Ionicons
-                name={period === 'morning' ? 'sunny' : 'moon'}
-                size={22}
-                color={Colors.accent.gold}
-              />
-              <Text style={[styles.greetingText, { color: Colors.accent.cream }]}>
-                {greetingText}
+    <View style={[styles.root, { backgroundColor: Colors.bg.start }]}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Header */}
+        <View style={styles.headerRow}>
+          <View style={styles.greetingBox}>
+            <Ionicons name={getPeriodIcon() as any} size={20} color={Colors.accent.gold} />
+            <Text style={[styles.greetingText, { color: Colors.accent.cream }]}>
+              {greetingText}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={toggleTheme} style={[
+            styles.themeBtn,
+            { backgroundColor: state.theme === 'day' ? 'rgba(0,0,0,0.04)' : 'rgba(255,255,255,0.06)' }
+          ]}>
+            <Ionicons
+              name={state.theme === 'day' ? 'moon' : 'sunny'}
+              size={18}
+              color={Colors.accent.gold}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Relationship Counter */}
+        <View style={[styles.counterCard, {
+          backgroundColor: Colors.bg.card,
+          borderColor: Colors.bg.cardBorder,
+          shadowColor: state.theme === 'day' ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.3)',
+        }]}>
+          <View style={styles.counterInner}>
+            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+              <FontAwesome5 name="heart" size={20} color={Colors.accent.rose} solid />
+            </Animated.View>
+            <View style={styles.counterTextBox}>
+              <Text style={[styles.counterNumber, { color: Colors.accent.gold }]}>
+                {daysCount.toLocaleString()}
+              </Text>
+              <Text style={[styles.counterLabel, { color: Colors.text.muted }]}>
+                Days Together
               </Text>
             </View>
-            <TouchableOpacity onPress={toggleTheme} style={[
-              styles.themeBtn,
-              { backgroundColor: state.theme === 'day' ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.08)' }
-            ]}>
-              <Ionicons
-                name={state.theme === 'day' ? 'moon' : 'sunny'}
-                size={20}
-                color={Colors.accent.gold}
-              />
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+              <FontAwesome5 name="heart" size={20} color={Colors.accent.rose} solid />
+            </Animated.View>
           </View>
+          <Text style={[styles.counterDate, { color: Colors.text.secondary }]}>
+            Since September 2021
+          </Text>
+        </View>
+
+        {/* Daily Prayer */}
+        <View style={[styles.prayerCard, {
+          backgroundColor: Colors.bg.card,
+          borderColor: Colors.bg.cardBorder,
+        }]}>
+          <MaterialCommunityIcons name="hands-pray" size={16} color={Colors.accent.gold} />
           <Text style={[styles.prayerText, { color: Colors.text.secondary }]}>
             {dailyPrayer}
           </Text>
         </View>
 
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+        {/* Daily Love Message */}
+        <View style={[styles.messageCard, {
+          backgroundColor: Colors.bg.card,
+          borderColor: Colors.bg.cardBorder,
+        }]}>
+          <View style={styles.messageHeader}>
+            <FontAwesome5 name="quote-left" size={14} color={Colors.accent.gold} />
+            <Text style={[styles.messageLabel, { color: Colors.accent.gold }]}>
+              Daily Love Note
+            </Text>
+          </View>
+          <Text style={[styles.messageText, { color: Colors.accent.cream }]}>
+            {dailyMessage}
+          </Text>
+          <FontAwesome5
+            name="quote-right"
+            size={14}
+            color={Colors.accent.gold}
+            style={{ alignSelf: 'flex-end', marginTop: Spacing.sm }}
+          />
+        </View>
+
+        {/* Daily Photo */}
+        <View style={[styles.photoCard, {
+          backgroundColor: Colors.bg.card,
+          borderColor: Colors.bg.cardBorder,
+        }]}>
+          <Image
+            source={dailyPhoto.source}
+            style={styles.photoImage}
+            resizeMode="cover"
+          />
+          <View style={[styles.photoCaptionBox, { backgroundColor: Colors.bg.card }]}>
+            <Text style={[styles.photoCaption, { color: Colors.accent.cream }]}>
+              {dailyPhoto.caption}
+            </Text>
+            <Text style={[styles.photoDate, { color: Colors.text.muted }]}>
+              {dailyPhoto.dateLabel}
+            </Text>
+          </View>
+        </View>
+
+        {/* Letter Card */}
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={handleOpenLetter}
+          style={[styles.letterCard, {
+            backgroundColor: Colors.bg.card,
+            borderColor: Colors.bg.cardBorder,
+          }]}
         >
-          {/* Daily Love Message */}
-          <View style={[
-            styles.messageCard,
-            { backgroundColor: Colors.bg.card, borderColor: Colors.bg.cardBorder }
-          ]}>
-            <MaterialCommunityIcons
-              name="format-quote-open"
-              size={24}
-              color={Colors.accent.gold}
-              style={styles.quoteIcon}
-            />
-            <Text style={[styles.messageText, { color: Colors.accent.cream }]}>
-              {dailyMessage}
+          <View style={styles.letterInner}>
+            <View style={[styles.letterSeal, { borderColor: 'rgba(212,175,55,0.3)' }]}>
+              <Text style={styles.letterSealText}>F</Text>
+            </View>
+            <FontAwesome5 name="envelope-open-text" size={32} color={Colors.accent.rose} solid />
+            <Text style={[styles.letterTitle, { color: Colors.accent.cream }]}>
+              A Letter For You
             </Text>
-            <MaterialCommunityIcons
-              name="format-quote-close"
-              size={24}
-              color={Colors.accent.gold}
-              style={[styles.quoteIcon, { alignSelf: 'flex-end' }]}
-            />
-          </View>
-
-          {/* Daily Photo */}
-          <View style={[
-            styles.photoCard,
-            { backgroundColor: Colors.bg.card, borderColor: Colors.bg.cardBorder }
-          ]}>
-            <Image
-              source={dailyPhoto.source}
-              style={styles.photoImage}
-              resizeMode="cover"
-            />
-            <View style={styles.photoCaptionBox}>
-              <Text style={[styles.photoCaption, { color: Colors.accent.cream }]}>
-                {dailyPhoto.caption}
-              </Text>
-              <Text style={[styles.photoDate, { color: Colors.text.muted }]}>
-                {dailyPhoto.dateLabel}
-              </Text>
+            <Text style={[styles.letterHint, { color: Colors.text.muted }]}>
+              Tap to read your letter, my princess
+            </Text>
+            <View style={styles.letterDivider}>
+              <View style={[styles.letterLine, { backgroundColor: Colors.bg.cardBorder }]} />
+              <FontAwesome5 name="heart" size={8} color={Colors.accent.roseLight} solid />
+              <View style={[styles.letterLine, { backgroundColor: Colors.bg.cardBorder }]} />
             </View>
           </View>
+        </TouchableOpacity>
 
-          {/* Envelope */}
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
           <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={handleOpenLetter}
-            style={[
-              styles.envelopeCard,
-              { backgroundColor: Colors.bg.card, borderColor: Colors.bg.cardBorder }
-            ]}
+            style={[styles.actionBtn, {
+              backgroundColor: Colors.bg.card,
+              borderColor: Colors.bg.cardBorder,
+            }]}
+            onPress={() => navigation.navigate('Main', { screen: 'Chat' })}
           >
-            <View style={styles.envelopeContent}>
-              <FontAwesome5 name="envelope" size={40} color={Colors.accent.rose} solid />
-              <Text style={[styles.envelopeTitle, { color: Colors.accent.cream }]}>
-                A Letter For You
-              </Text>
-              <Text style={[styles.envelopeHint, { color: Colors.text.muted }]}>
-                Tap to read your letter, my princess
-              </Text>
-            </View>
+            <Ionicons name="chatbubble-ellipses" size={22} color={Colors.accent.gold} />
+            <Text style={[styles.actionText, { color: Colors.accent.cream }]}>Chat with Me</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionBtn, {
+              backgroundColor: Colors.bg.card,
+              borderColor: Colors.bg.cardBorder,
+            }]}
+            onPress={() => navigation.navigate('Main', { screen: 'Music' })}
+          >
+            <Ionicons name="musical-notes" size={22} color={Colors.accent.gold} />
+            <Text style={[styles.actionText, { color: Colors.accent.cream }]}>Our Music</Text>
+          </TouchableOpacity>
+        </View>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <FontAwesome5 name="heart" size={12} color={Colors.accent.roseLight} solid />
-            <Text style={[styles.footerText, { color: Colors.text.muted }]}>
-              Made with love for Fatima
-            </Text>
-            <FontAwesome5 name="heart" size={12} color={Colors.accent.roseLight} solid />
-          </View>
-        </ScrollView>
-      </LinearGradient>
+        {/* Footer */}
+        <View style={styles.footer}>
+          <FontAwesome5 name="heart" size={10} color={Colors.accent.roseLight} solid />
+          <Text style={[styles.footerText, { color: Colors.text.muted }]}>
+            Made with love for Fatima
+          </Text>
+          <FontAwesome5 name="heart" size={10} color={Colors.accent.roseLight} solid />
+        </View>
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  gradient: { flex: 1 },
-  greetingHeader: {
-    marginHorizontal: Spacing.lg,
-    marginTop: 60,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
-    padding: Spacing.lg,
-    marginBottom: Spacing.md,
+  scrollContent: {
+    paddingBottom: Spacing.xxxl,
+    paddingTop: 55,
+    paddingHorizontal: Spacing.lg,
   },
-  greetingTopRow: {
+  headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: Spacing.lg,
   },
-  greetingIconText: {
+  greetingBox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
@@ -206,43 +298,92 @@ const styles = StyleSheet.create({
   greetingText: {
     fontFamily: Fonts.title,
     fontSize: 20,
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
   themeBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  counterCard: {
+    borderRadius: Radius.xl,
+    borderWidth: 1,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  counterInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+  },
+  counterTextBox: {
+    alignItems: 'center',
+  },
+  counterNumber: {
+    fontFamily: Fonts.title,
+    fontSize: 32,
+    letterSpacing: 1,
+  },
+  counterLabel: {
+    fontFamily: Fonts.bodyMedium,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  counterDate: {
+    fontFamily: Fonts.body,
+    fontSize: 11,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
+  },
+  prayerCard: {
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    padding: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xl,
   },
   prayerText: {
     fontFamily: Fonts.body,
     fontSize: 13,
-    marginTop: Spacing.sm,
     lineHeight: 20,
     fontStyle: 'italic',
-  },
-  scrollContent: {
-    paddingBottom: Spacing.xxl,
-    paddingTop: Spacing.sm,
+    flex: 1,
   },
   messageCard: {
-    marginHorizontal: Spacing.lg,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     padding: Spacing.lg,
     marginBottom: Spacing.xl,
   },
-  quoteIcon: { marginBottom: Spacing.sm },
+  messageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  messageLabel: {
+    fontFamily: Fonts.bodyMedium,
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
   messageText: {
     fontFamily: Fonts.body,
-    fontSize: 16,
-    lineHeight: 26,
+    fontSize: 15,
+    lineHeight: 24,
     textAlign: 'left',
   },
   photoCard: {
-    marginHorizontal: Spacing.lg,
-    borderRadius: Radius.lg,
+    borderRadius: Radius.xl,
     borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Spacing.xl,
@@ -264,26 +405,67 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: Spacing.xs,
   },
-  envelopeCard: {
-    marginHorizontal: Spacing.lg,
-    borderRadius: Radius.lg,
+  letterCard: {
+    borderRadius: Radius.xl,
     borderWidth: 1,
+    marginBottom: Spacing.xl,
+    overflow: 'hidden',
+  },
+  letterInner: {
     padding: Spacing.xl,
     alignItems: 'center',
-    marginBottom: Spacing.xl,
   },
-  envelopeContent: {
+  letterSeal: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(212,175,55,0.12)',
+    justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: Spacing.md,
+    borderWidth: 1,
   },
-  envelopeTitle: {
+  letterSealText: {
+    fontFamily: Fonts.title,
+    fontSize: 16,
+    color: '#d4af37',
+  },
+  letterTitle: {
     fontFamily: Fonts.title,
     fontSize: 18,
     marginTop: Spacing.md,
   },
-  envelopeHint: {
+  letterHint: {
     fontFamily: Fonts.body,
-    fontSize: 12,
+    fontSize: 13,
     marginTop: Spacing.sm,
+  },
+  letterDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  letterLine: {
+    width: 24,
+    height: 1,
+  },
+  quickActions: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
+  },
+  actionBtn: {
+    flex: 1,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  actionText: {
+    fontFamily: Fonts.bodyMedium,
+    fontSize: 13,
   },
   footer: {
     marginTop: Spacing.lg,
@@ -294,6 +476,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontFamily: Fonts.body,
-    fontSize: 12,
+    fontSize: 11,
   },
 });

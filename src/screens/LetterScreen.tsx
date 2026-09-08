@@ -28,7 +28,6 @@ export default function LetterScreen() {
   const letter = state.selectedLetter;
   const isBday = state.isBirthday;
 
-  // Reanimated shared values
   const translateY = useSharedValue(height);
   const opacity = useSharedValue(0);
 
@@ -42,13 +41,11 @@ export default function LetterScreen() {
   }));
 
   useEffect(() => {
-    // Entrance animation
     translateY.value = withTiming(0, { duration: 600 });
     opacity.value = withTiming(1, { duration: 400 });
   }, []);
 
   const handleClose = () => {
-    // Exit animation, then navigate back
     translateY.value = withTiming(height, { duration: 400 }, () => {
       runOnJS(() => navigation.goBack())();
     });
@@ -136,8 +133,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sheet: {
-    borderTopLeftRadius: Radius.xl,
-    borderTopRightRadius: Radius.xl,
+    borderTopLeftRadius: Radius.xxl,
+    borderTopRightRadius: Radius.xxl,
     maxHeight: height * 0.88,
     minHeight: height * 0.5,
     shadowColor: '#000',

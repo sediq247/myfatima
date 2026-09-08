@@ -1,10 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type TimePeriod = 'morning' | 'night';
+export type TimePeriod = 'morning' | 'afternoon' | 'night';
 
 const MORNING_START_HOUR = 5;
 const MORNING_START_MINUTE = 30;
-const NIGHT_START_HOUR = 19;
+const AFTERNOON_START_HOUR = 12;
+const AFTERNOON_START_MINUTE = 0;
+const NIGHT_START_HOUR = 17;
 const NIGHT_START_MINUTE = 0;
 
 export function getTimePeriod(date: Date = new Date()): TimePeriod {
@@ -12,10 +14,14 @@ export function getTimePeriod(date: Date = new Date()): TimePeriod {
   const minutes = date.getMinutes();
   const totalMinutes = hours * 60 + minutes;
   const morningStart = MORNING_START_HOUR * 60 + MORNING_START_MINUTE;
+  const afternoonStart = AFTERNOON_START_HOUR * 60 + AFTERNOON_START_MINUTE;
   const nightStart = NIGHT_START_HOUR * 60 + NIGHT_START_MINUTE;
 
-  if (totalMinutes >= morningStart && totalMinutes < nightStart) {
+  if (totalMinutes >= morningStart && totalMinutes < afternoonStart) {
     return 'morning';
+  }
+  if (totalMinutes >= afternoonStart && totalMinutes < nightStart) {
+    return 'afternoon';
   }
   return 'night';
 }
@@ -69,16 +75,18 @@ export function formatDuration(seconds: number): string {
 }
 
 export function getTimeLabel(period: TimePeriod): string {
-  return period === 'morning' ? 'Morning' : 'Night';
+  if (period === 'morning') return 'Morning';
+  if (period === 'afternoon') return 'Afternoon';
+  return 'Night';
 }
 
 export function getGreetingText(period: TimePeriod, isBday: boolean = false): string {
   if (isBday) {
-    return period === 'morning'
-      ? 'Happy Birthday my Fatima!'
-      : 'Goodnight my birthday queen';
+    if (period === 'morning') return 'Happy Birthday my Fatima!';
+    if (period === 'afternoon') return 'Happy Birthday my princess!';
+    return 'Goodnight my birthday queen';
   }
-  return period === 'morning'
-    ? 'Good morning my Fatima'
-    : 'Goodnight my Fatima';
+  if (period === 'morning') return 'Good morning my Fatima';
+  if (period === 'afternoon') return 'Good afternoon my princess';
+  return 'Goodnight my Fatima';
 }

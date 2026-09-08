@@ -1,10 +1,11 @@
-import React, { createContext, useContext, useReducer, useCallback, useRef, useEffect } from 'react';
-import { createAudioPlayer, setAudioModeAsync, AudioPlayer } from 'expo-audio';
+import React, { createContext, useContext, useReducer, useCallback, useEffect, useMemo, useRef } from 'react';
+import { AppState } from 'react-native';
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Song, LoveLetter } from '../data';
+import { Song, LoveLetter, songs } from '../data';
 
 // ============================================================
-// PRE-IMPORT ALL LOCAL AUDIO FILES (20 songs)
+// AUDIO ASSETS MAP
 // ============================================================
 const songAssets: Record<string, any> = {
   'song1.mp3': require('../../assets/music/song1.mp3'),
@@ -33,12 +34,21 @@ function getSongSource(filename: string): any {
   return songAssets[filename] || { uri: filename };
 }
 
+// ============================================================
+// TYPES
+// ============================================================
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'model';
+  text: string;
+  timestamp: number;
+}
+
 export interface MusicState {
   isPlaying: boolean;
   currentTrackIndex: number;
   progress: number;
   duration: number;
-  playlistVisible: boolean;
 }
 
 export interface AppState {
@@ -47,23 +57,28 @@ export interface AppState {
   greetingVisible: boolean;
   greetingMessage: string;
   greetingPrayer: string;
-  timePeriod: 'morning' | 'night';
+  timePeriod: 'morning' | 'afternoon' | 'night';
   isBirthday: boolean;
   theme: 'day' | 'night';
+  chatMessages: ChatMessage[];
+  chatLoading: boolean;
 }
 
 type Action =
   | { type: 'SET_TRACK'; index: number }
   | { type: 'PLAY' }
   | { type: 'PAUSE' }
-  | { type: 'TOGGLE_PLAYLIST' }
   | { type: 'SET_PROGRESS'; progress: number; duration: number }
   | { type: 'SELECT_LETTER'; letter: LoveLetter | null }
-  | { type: 'SHOW_GREETING'; message: string; prayer: string; period: 'morning' | 'night'; isBirthday: boolean }
+  | { type: 'SHOW_GREETING'; message: string; prayer: string; period: 'morning' | 'afternoon' | 'night'; isBirthday: boolean }
   | { type: 'HIDE_GREETING' }
-  | { type: 'SET_TIME_PERIOD'; period: 'morning' | 'night' }
+  | { type: 'SET_TIME_PERIOD'; period: 'morning' | 'afternoon' | 'night' }
   | { type: 'SET_BIRTHDAY'; isBirthday: boolean }
-  | { type: 'SET_THEME'; theme: 'day' | 'night' };
+  | { type: 'SET_THEME'; theme: 'day' | 'night' }
+  | { type: 'ADD_CHAT_MESSAGE'; message: ChatMessage }
+  | { type: 'SET_CHAT_LOADING'; loading: boolean }
+  | { type: 'CLEAR_CHAT' }
+  | { type: 'LOAD_CHAT'; messages: ChatMessage[] };
 
 const initialState: AppState = {
   music: {
@@ -71,7 +86,6 @@ const initialState: AppState = {
     currentTrackIndex: 0,
     progress: 0,
     duration: 0,
-    playlistVisible: false,
   },
   selectedLetter: null,
   greetingVisible: false,
@@ -80,6 +94,8 @@ const initialState: AppState = {
   timePeriod: 'morning',
   isBirthday: false,
   theme: 'day',
+  chatMessages: [],
+  chatLoading: false,
 };
 
 function reducer(state: AppState, action: Action): AppState {
@@ -93,8 +109,6 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, music: { ...state.music, isPlaying: true } };
     case 'PAUSE':
       return { ...state, music: { ...state.music, isPlaying: false } };
-    case 'TOGGLE_PLAYLIST':
-      return { ...state, music: { ...state.music, playlistVisible: !state.music.playlistVisible } };
     case 'SET_PROGRESS':
       return {
         ...state,
@@ -119,6 +133,14 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, isBirthday: action.isBirthday };
     case 'SET_THEME':
       return { ...state, theme: action.theme };
+    case 'ADD_CHAT_MESSAGE':
+      return { ...state, chatMessages: [...state.chatMessages, action.message] };
+    case 'SET_CHAT_LOADING':
+      return { ...state, chatLoading: action.loading };
+    case 'CLEAR_CHAT':
+      return { ...state, chatMessages: [] };
+    case 'LOAD_CHAT':
+      return { ...state, chatMessages: action.messages };
     default:
       return state;
   }
@@ -129,147 +151,95 @@ interface AppContextType {
   dispatch: React.Dispatch<Action>;
   loadTheme: () => Promise<void>;
   toggleTheme: () => Promise<void>;
-  playTrack: (index: number, songs: Song[]) => Promise<void>;
-  togglePlayPause: () => Promise<void>;
-  skipNext: (songs: Song[]) => Promise<void>;
-  skipPrev: (songs: Song[]) => Promise<void>;
-  cleanupMusic: () => Promise<void>;
+  playTrack: (index: number) => void;
+  togglePlayPause: () => void;
+  skipNext: () => void;
+  skipPrev: () => void;
+  loadChat: () => Promise<void>;
+  saveChat: (messages: ChatMessage[]) => Promise<void>;
+  clearChat: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const playerRef = useRef<AudioPlayer | null>(null);
-  const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
-  const listenerRef = useRef<any>(null);
+const CHAT_STORAGE_KEY = 'myfatima_chat_history';
 
-  // Setup audio mode with error handling
+// ============================================================
+// AUDIO CONTROLLER — handles playback with background support
+// ============================================================
+function AudioController() {
+  const { state, dispatch } = useApp();
+  const appStateRef = useRef(AppState.currentState);
+
+  // Get current song and memoize the source to prevent player recreation
+  const currentSong = songs[state.music.currentTrackIndex];
+  const source = useMemo(() => {
+    return currentSong ? getSongSource(currentSong.filename) : null;
+  }, [currentSong?.filename]);
+
+  // Create player only when we have a valid source
+  const player = useAudioPlayer(source || '');
+  const status = useAudioPlayerStatus(player);
+
+  // Handle play/pause from state
   useEffect(() => {
-    let mounted = true;
-    const setupAudio = async () => {
-      try {
-        await setAudioModeAsync({
-          playsInSilentMode: true,
-          shouldPlayInBackground: true,
-        });
-      } catch (e) {
-        console.warn('Audio mode setup failed:', e);
-      }
-    };
-    if (mounted) setupAudio();
-    return () => { mounted = false; };
-  }, []);
-
-  const clearProgressInterval = useCallback(() => {
-    if (progressInterval.current) {
-      clearInterval(progressInterval.current);
-      progressInterval.current = null;
-    }
-  }, []);
-
-  const startProgressPolling = useCallback((player: AudioPlayer) => {
-    clearProgressInterval();
-    progressInterval.current = setInterval(() => {
-      const status = player.status;
-      if (status.isLoaded) {
-        dispatch({
-          type: 'SET_PROGRESS',
-          progress: status.currentTime / 1000,
-          duration: status.duration ? status.duration / 1000 : 0,
-        });
-      }
-    }, 1000);
-  }, [clearProgressInterval]);
-
-  const cleanupPlayer = useCallback(() => {
-    clearProgressInterval();
-    if (listenerRef.current && playerRef.current) {
-      try {
-        playerRef.current.removeListener('playbackStatusUpdate', listenerRef.current);
-      } catch (e) {
-        // Ignore
-      }
-      listenerRef.current = null;
-    }
-    if (playerRef.current) {
-      try {
-        playerRef.current.pause();
-      } catch (e) {
-        // Ignore
-      }
-      playerRef.current = null;
-    }
-  }, [clearProgressInterval]);
-
-  const playTrack = useCallback(async (index: number, songs: Song[]) => {
-    try {
-      // Cleanup previous player completely
-      cleanupPlayer();
-
-      // Small delay to ensure native cleanup
-      await new Promise(resolve => setTimeout(resolve, 50));
-
-      const source = getSongSource(songs[index].filename);
-      const newPlayer = createAudioPlayer(source, {
-        shouldPlay: true,
-        isLooping: false
-      });
-
-      playerRef.current = newPlayer;
-      dispatch({ type: 'SET_TRACK', index });
-
-      startProgressPolling(newPlayer);
-
-      // Store listener reference for cleanup
-      const listener = (status: any) => {
-        if (status.didJustFinish) {
-          const nextIndex = (index + 1) % songs.length;
-          playTrack(nextIndex, songs);
-        }
-      };
-     
-      newPlayer.addListener('playbackStatusUpdate', listener);
-      listenerRef.current = listener;
-
-    } catch (e) {
-      console.warn('Audio play failed', e);
-      dispatch({ type: 'PAUSE' });
-    }
-  }, [cleanupPlayer, startProgressPolling]);
-
-  const togglePlayPause = useCallback(async () => {
-    const player = playerRef.current;
-    if (!player) return;
-
+    if (!player || !source) return;
     try {
       if (state.music.isPlaying) {
-        player.pause();
-        dispatch({ type: 'PAUSE' });
-        clearProgressInterval();
-      } else {
         player.play();
-        dispatch({ type: 'PLAY' });
-        startProgressPolling(player);
+      } else {
+        player.pause();
       }
     } catch (e) {
-      console.warn('Toggle play failed', e);
+      console.warn('Audio control error:', e);
     }
-  }, [state.music.isPlaying, clearProgressInterval, startProgressPolling]);
+  }, [state.music.isPlaying, player, source]);
 
-  const skipNext = useCallback(async (songs: Song[]) => {
-    const nextIndex = (state.music.currentTrackIndex + 1) % songs.length;
-    await playTrack(nextIndex, songs);
-  }, [state.music.currentTrackIndex, playTrack]);
+  // Update progress from status
+  useEffect(() => {
+    if (!status?.isLoaded) return;
+    dispatch({
+      type: 'SET_PROGRESS',
+      progress: status.currentTime / 1000,
+      duration: status.duration ? status.duration / 1000 : 0,
+    });
+    if (status.didJustFinish) {
+      dispatch({ type: 'PAUSE' });
+      // Auto-advance to next track
+      setTimeout(() => {
+        dispatch({ type: 'SET_TRACK', index: (state.music.currentTrackIndex + 1) % songs.length });
+      }, 500);
+    }
+  }, [status]);
 
-  const skipPrev = useCallback(async (songs: Song[]) => {
-    const prevIndex = (state.music.currentTrackIndex - 1 + songs.length) % songs.length;
-    await playTrack(prevIndex, songs);
-  }, [state.music.currentTrackIndex, playTrack]);
+  // Keep audio playing when app goes to background
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'background' && state.music.isPlaying && player) {
+        // Audio should continue playing in background
+        // The expo-audio plugin with enableBackgroundPlayback handles this natively
+        try {
+          player.play();
+        } catch (e) {
+          console.warn('Background audio error:', e);
+        }
+      }
+      appStateRef.current = nextAppState;
+    });
 
-  const cleanupMusic = useCallback(async () => {
-    cleanupPlayer();
-  }, [cleanupPlayer]);
+    return () => {
+      subscription.remove();
+    };
+  }, [state.music.isPlaying, player]);
+
+  return null;
+}
+
+// ============================================================
+// APP PROVIDER
+// ============================================================
+export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const loadTheme = useCallback(async () => {
     try {
@@ -292,6 +262,53 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state.theme]);
 
+  const playTrack = useCallback((index: number) => {
+    dispatch({ type: 'SET_TRACK', index });
+  }, []);
+
+  const togglePlayPause = useCallback(() => {
+    dispatch({ type: state.music.isPlaying ? 'PAUSE' : 'PLAY' });
+  }, [state.music.isPlaying]);
+
+  const skipNext = useCallback(() => {
+    const nextIndex = (state.music.currentTrackIndex + 1) % songs.length;
+    dispatch({ type: 'SET_TRACK', index: nextIndex });
+  }, [state.music.currentTrackIndex]);
+
+  const skipPrev = useCallback(() => {
+    const prevIndex = (state.music.currentTrackIndex - 1 + songs.length) % songs.length;
+    dispatch({ type: 'SET_TRACK', index: prevIndex });
+  }, [state.music.currentTrackIndex]);
+
+  const loadChat = useCallback(async () => {
+    try {
+      const saved = await AsyncStorage.getItem(CHAT_STORAGE_KEY);
+      if (saved) {
+        const messages = JSON.parse(saved);
+        dispatch({ type: 'LOAD_CHAT', messages });
+      }
+    } catch (e) {
+      console.warn('Failed to load chat:', e);
+    }
+  }, []);
+
+  const saveChat = useCallback(async (messages: ChatMessage[]) => {
+    try {
+      await AsyncStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    } catch (e) {
+      console.warn('Failed to save chat:', e);
+    }
+  }, []);
+
+  const clearChat = useCallback(async () => {
+    try {
+      await AsyncStorage.removeItem(CHAT_STORAGE_KEY);
+      dispatch({ type: 'CLEAR_CHAT' });
+    } catch (e) {
+      console.warn('Failed to clear chat:', e);
+    }
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -303,9 +320,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         togglePlayPause,
         skipNext,
         skipPrev,
-        cleanupMusic
+        loadChat,
+        saveChat,
+        clearChat,
       }}
     >
+      <AudioController />
       {children}
     </AppContext.Provider>
   );

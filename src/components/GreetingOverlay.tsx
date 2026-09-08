@@ -61,6 +61,17 @@ export default function GreetingOverlay({ visible, message, prayer, period, isBi
     });
   };
 
+  const getIconName = () => {
+    if (isBirthday) return 'birthday-cake';
+    if (period === 'morning') return 'sunny';
+    if (period === 'afternoon') return 'partly-sunny';
+    return 'moon';
+  };
+
+  const getIconSize = () => {
+    return isBirthday ? 36 : 40;
+  };
+
   if (!visible) return null;
 
   return (
@@ -78,11 +89,11 @@ export default function GreetingOverlay({ visible, message, prayer, period, isBi
       >
         <View style={[styles.iconCircle, isBirthday && styles.birthdayIconCircle]}>
           {isBirthday ? (
-            <FontAwesome5 name="birthday-cake" size={36} color="#d4af37" />
+            <FontAwesome5 name="birthday-cake" size={getIconSize()} color="#d4af37" />
           ) : (
             <Ionicons
-              name={period === 'morning' ? 'sunny' : 'moon'}
-              size={40}
+              name={getIconName() as any}
+              size={getIconSize()}
               color="#d4af37"
             />
           )}
@@ -130,7 +141,7 @@ const styles = StyleSheet.create({
   card: {
     width: width * 0.85,
     backgroundColor: '#141b2d',
-    borderRadius: Radius.xl,
+    borderRadius: Radius.xxl,
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.3)',
     padding: Spacing.xl,

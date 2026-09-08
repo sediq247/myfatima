@@ -27,6 +27,7 @@ import {
 } from './src/core/engine';
 import {
   morningPrayers,
+  afternoonPrayers,
   nightPrayers,
   birthdayPrayers,
   isBirthday,
@@ -34,16 +35,12 @@ import {
 } from './src/data';
 import { Themes } from './src/theme';
 
-// Keep the native splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync().catch(() => {
-  /* Handle/ignore re-entrance errors gracefully */
-});
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 function AppContent() {
   const { state, dispatch, loadTheme } = useApp();
   const [assetsReady, setAssetsReady] = useState(false);
 
-  // Load Google Fonts
   const [fontsLoaded, fontError] = useFonts({
     PlayfairDisplay_700Bold,
     PlayfairDisplay_700Bold_Italic,
@@ -53,7 +50,6 @@ function AppContent() {
     DancingScript_700Bold,
   });
 
-  // Handle the logic for triggering the greeting modal
   const triggerGreeting = useCallback(async () => {
     try {
       const period = getTimePeriod();
@@ -66,14 +62,14 @@ function AppContent() {
         if (bday) {
           prayers = birthdayPrayers;
         } else {
-          prayers = period === 'morning' ? morningPrayers : nightPrayers;
+          prayers = period === 'morning' ? morningPrayers : period === 'afternoon' ? afternoonPrayers : nightPrayers;
         }
-      
+
         if (prayers && prayers.length > 0) {
           const prayerIndex = getDailyIndex(prayers.length);
           const prayer = prayers[prayerIndex].text;
           const message = getGreetingText(period, bday);
-        
+
           dispatch({ type: 'SHOW_GREETING', message, prayer, period, isBirthday: bday });
           await markGreetingShown(key);
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -87,7 +83,6 @@ function AppContent() {
     }
   }, [dispatch]);
 
-  // Step 1: Preload images and themes in the background
   useEffect(() => {
     let mounted = true;
     async function prepare() {
@@ -109,7 +104,6 @@ function AppContent() {
     return () => { mounted = false; };
   }, [loadTheme]);
 
-  // Step 2: Hide splash screen ONLY when BOTH fonts AND assets are ready
   useEffect(() => {
     async function hideSplashAndGreet() {
       if (fontsLoaded && assetsReady) {
@@ -124,15 +118,13 @@ function AppContent() {
     hideSplashAndGreet();
   }, [fontsLoaded, assetsReady, triggerGreeting]);
 
-  // Handle font loading errors gracefully
   useEffect(() => {
     if (fontError) {
       console.warn('Font loading error:', fontError);
-      setAssetsReady(true); // Don't block app launch on font errors
+      setAssetsReady(true);
     }
   }, [fontError]);
 
-  // Step 3: Monitor time period background changes every minute
   useEffect(() => {
     const interval = setInterval(() => {
       const period = getTimePeriod();
@@ -146,20 +138,18 @@ function AppContent() {
     return () => clearInterval(interval);
   }, [state.timePeriod, state.isBirthday, dispatch, triggerGreeting]);
 
-  // Render nothing while initializing so the native splash screen stays locked in place
   if (!fontsLoaded || !assetsReady) {
     return null;
   }
 
-  // Resolve active background theme color safely
   const currentThemeData = Themes[state.theme] || Themes['day'] || { bg: { start: '#ffffff' } };
 
   return (
     <View style={[styles.container, { backgroundColor: currentThemeData.bg.start }]}>
       <StatusBar style={state.theme === 'day' ? 'dark' : 'light'} />
-    
+
       <AppNavigator />
-    
+
       <GreetingOverlay
         visible={state.greetingVisible}
         message={state.greetingMessage}

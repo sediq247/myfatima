@@ -3,14 +3,14 @@ export type ThemeType = 'day' | 'night';
 export const Themes = {
   day: {
     bg: {
-      start: '#f7f3ed',
-      end: '#ede6d8',
-      card: 'rgba(255,255,255,0.85)',
+      start: '#faf8f5',
+      end: '#f5f0e8',
+      card: '#ffffff',
       cardBorder: 'rgba(0,0,0,0.06)',
     },
     accent: {
-      gold: '#b8860b',
-      goldLight: '#d4a843',
+      gold: '#c9a227',
+      goldLight: '#e8c96a',
       rose: '#c44569',
       roseLight: '#e08a9d',
       cream: '#2c1810',
@@ -24,9 +24,9 @@ export const Themes = {
   },
   night: {
     bg: {
-      start: '#0a0e1a',
-      end: '#141b2d',
-      card: 'rgba(255,255,255,0.06)',
+      start: '#0f1525',
+      end: '#1a2035',
+      card: 'rgba(255,255,255,0.05)',
       cardBorder: 'rgba(255,255,255,0.08)',
     },
     accent: {
@@ -57,16 +57,18 @@ export const Fonts = {
 export const Spacing = {
   xs: 4,
   sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
+  md: 12,
+  lg: 16,
+  xl: 20,
+  xxl: 28,
+  xxxl: 40,
 } as const;
 
 export const Radius = {
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  sm: 6,
+  md: 10,
+  lg: 14,
+  xl: 20,
+  xxl: 28,
   full: 9999,
 } as const;

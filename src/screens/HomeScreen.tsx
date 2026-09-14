@@ -147,7 +147,7 @@ export default function HomeScreen() {
                 {daysCount.toLocaleString()}
               </Text>
               <Text style={[styles.counterLabel, { color: Colors.text.muted }]}>
-                Days Together
+                My love for you
               </Text>
             </View>
             <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
@@ -177,9 +177,6 @@ export default function HomeScreen() {
         }]}>
           <View style={styles.messageHeader}>
             <FontAwesome5 name="quote-left" size={14} color={Colors.accent.gold} />
-            <Text style={[styles.messageLabel, { color: Colors.accent.gold }]}>
-              Daily Love Note
-            </Text>
           </View>
           <Text style={[styles.messageText, { color: Colors.accent.cream }]}>
             {dailyMessage}

@@ -25,9 +25,9 @@ export default function MusicScreen() {
   return (
     <View style={[styles.root, { backgroundColor: Colors.bg.start, paddingTop: insets.top }]}>
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: Colors.accent.cream }]}>Our Music</Text>
+        <Text style={[styles.headerTitle, { color: Colors.accent.cream }]}>Music For You</Text>
         <Text style={[styles.headerSubtitle, { color: Colors.text.muted }]}>
-          Songs that remind me of you, my princess
+          Wish zaki saka earpiece dear,domin wannan wakokin sadukarwa ney zuwa gareki key kadai
         </Text>
       </View>
 

@@ -164,7 +164,7 @@ export default function ChatScreen() {
     try {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ 
-        model: 'gemini-2.5-flash',
+        model: '<gemini-3-flash',
         systemInstruction: SYSTEM_PROMPT,
       });
 
@@ -198,7 +198,7 @@ export default function ChatScreen() {
       let errorMsg = "My princess, network is acting up here in Biu. But my love for you is still strong. Try again in a moment.";
 
       if (error?.message?.includes('API key')) {
-        errorMsg = "My princess, there's an issue with the API key. Please ask Abubakar to check it in app.json.";
+        errorMsg = "My princess, there's an issue with the API key. Please ask Abubakar to check it kinji dear?.";
       } else if (error?.message?.includes('network') || error?.message?.includes('fetch')) {
         errorMsg = "My princess, the internet connection is weak right now. Please check your network and try again.";
       }
@@ -289,7 +289,7 @@ export default function ChatScreen() {
               </View>
               <View>
                 <Text style={[styles.headerTitle, { color: Colors.accent.cream }]}>
-                  Abubakar (Sadiq)
+                  Abubakar
                 </Text>
                 <View style={styles.headerStatus}>
                   <View style={[styles.statusDot, { backgroundColor: apiKeyValid === false ? '#ef4444' : '#4ade80' }]} />
@@ -331,7 +331,7 @@ export default function ChatScreen() {
                 Hey My Princess
               </Text>
               <Text style={[styles.emptyText, { color: Colors.text.muted }]}>
-                Send a message and I'll respond just like Abubakar would. I know everything about us, our memories, and our love story.
+                I am always here to chat YOU. please muyi hira kinji dear,zan kasance aboki,masoyi and your patner always
               </Text>
             </View>
           }
